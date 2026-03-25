@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
+  <meta name="theme-color" content="#4361ee">
+
+  <title>e-HASIL FPMSB TENANG</title>
+
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <base target="_top">
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="css/style.css">
+
+  <!-- Tema — apply sebelum render untuk elak flash -->
+  <script>
+    (function() {
+      try {
+        const t = localStorage.getItem("eh_tema");
+        if (t === "dark" || t === "light") {
+          document.documentElement.setAttribute("data-theme", t);
+        }
+      } catch(e) {}
+    })();
+  </script>
+</head>
+<body>
+
+  <!-- ======================================================================
+       LOADER (Full Screen)
+       ====================================================================== -->
+  <div id="loader">
+    <div class="spinner"></div>
+    <div style="margin-top:20px;font-size:13px;font-weight:900;
+                color:rgba(148,163,184,0.95);letter-spacing:1px;">
+      SILA TUNGGU...
+    </div>
+  </div>
+
+
+  <!-- ======================================================================
+       TOAST NOTIFIKASI
+       ====================================================================== -->
+  <div id="toast-box">
+    <i class="material-icons-round" id="toast-icon">notifications</i>
+    <span id="toast-msg">Notifikasi</span>
+  </div>
+
+
+  <!-- ======================================================================
+       HEADER
+       ====================================================================== -->
+  <div class="header">
+    <i class="material-icons-round menu-btn" onclick="toggleMenu()">menu</i>
+    <h3>e-HASIL FPMSB TENANG</h3>
+    <div class="theme-toggle" onclick="toggleTheme()" title="Tukar Tema">
+      <i class="material-icons-round" id="themeIcon">dark_mode</i>
+    </div>
+  </div>
+
+
+  <!-- ======================================================================
+       OVERLAY (Sidebar backdrop)
+       ====================================================================== -->
+  <div class="overlay" onclick="toggleMenu()"></div>
+
+
+  <!-- ======================================================================
+       SIDEBAR
+       ====================================================================== -->
+  <div class="sidebar">
+    <div class="sb-header">
+      <img class="sb-logo" src="https://i.imgur.com/APuF5wN.png" alt="Logo FPMSB">
+      <div class="sb-logo-text">SISTEM LADANG</div>
+    </div>
+    <div class="sb-menu">
+      <div class="sb-item active" id="menu-home"
+           onclick="nav('page-home', this)">
+        <i class="material-icons-round">dashboard</i>DASHBOARD
+      </div>
+      <div class="sb-item" id="menu-hasil"
+           onclick="nav('page-hasil', this)">
+        <i class="material-icons-round">bar_chart</i>INPUT HASIL
+      </div>
+      <div class="sb-item" id="menu-muda"
+           onclick="nav('page-muda', this)">
+        <i class="material-icons-round">eco</i>BTB MUDA
+      </div>
+      <div class="sb-item" id="menu-penalti"
+           onclick="nav('page-penalti', this)">
+        <i class="material-icons-round">warning</i>PENALTI
+      </div>
+      <div class="sb-item" id="menu-tandan"
+           onclick="nav('page-tandan', this)">
+        <i class="material-icons-round">inventory_2</i>REKOD TANDAN
+      </div>
+      <div class="sb-item" id="menu-admin"
+           onclick="nav('page-admin', this)">
+        <i class="material-icons-round">settings</i>ADMIN & REPORT
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ======================================================================
+       KANDUNGAN UTAMA
+       ====================================================================== -->
+  <div class="app-container">
+
+
+    <!-- ==================================================================
+         HALAMAN: DASHBOARD (Default)
+         ================================================================== -->
+    <div id="page-home" class="page-section active">
+
+      <!-- Ucapan selamat datang -->
+      <div class="welcome-box">
+        <img src="https://i.imgur.com/APuF5wN.png" alt="Logo">
+        <div>
+          <h2>Selamat Datang</h2>
+          <p>Dashboard Prestasi Ladang</p>
+        </div>
+      </div>
+
+      <!-- Kawasan kad prestasi — diisi secara dinamik oleh loadDashboardData() -->
+      <div id="dash-container">
+        <div style="text-align:center;padding:30px;color:var(--text-muted);
+                    font-size:13px;font-weight:800;">
+          <div class="spinner"
+               style="margin:0 auto 15px auto;width:30px;height:30px;
+                      border-width:3px;border-top-color:var(--primary);">
+          </div>
+          Menarik data dashboard...
+        </div>
+      </div>
+
+      <!-- Menu pantas -->
+      <h4 style="margin-top:30px;font-size:14px;color:var(--text-main);
+                 font-weight:900;margin-bottom:0;">
+        MENU PANTAS
+      </h4>
+      <div class="qa-grid">
+        <div class="qa-card"
+             onclick="nav('page-hasil', document.getElementById('menu-hasil'))">
+          <i class="material-icons-round">bar_chart</i>
+          <span>INPUT HASIL</span>
+        </div>
+        <div class="qa-card"
+             onclick="nav('page-muda', document.getElementById('menu-muda'))">
+          <i class="material-icons-round">eco</i>
+          <span>BTB MUDA</span>
+        </div>
+        <div class="qa-card"
+             onclick="nav('page-penalti', document.getElementById('menu-penalti'))">
+          <i class="material-icons-round">warning</i>
+          <span>PENALTI</span>
+        </div>
+        <div class="qa-card"
+             onclick="nav('page-tandan', document.getElementById('menu-tandan'))">
+          <i class="material-icons-round">inventory_2</i>
+          <span>REKOD TANDAN</span>
+        </div>
+        <div class="qa-card" style="grid-column:span 2"
+             onclick="nav('page-admin', document.getElementById('menu-admin'))">
+          <i class="material-icons-round">settings</i>
+          <span>ADMIN & LAPORAN</span>
+        </div>
+      </div>
+
+    </div><!-- /page-home -->
+
+
+    <!-- ==================================================================
+         HALAMAN: INPUT HASIL
+         ================================================================== -->
+    <div id="page-hasil" class="page-section">
+      <div class="pill">MODE: HASIL</div>
+      <div class="card">
+
+        <!-- Baris Tarikh + Mode -->
+        <div style="display:flex;gap:15px;margin-bottom:20px;">
+          <div class="input-wrapper" style="flex:1">
+            <i class="material-icons-round">calendar_today</i>
+            <input type="date" id="date-hasil"
+                   onchange="renderPeringkatHasil()">
+          </div>
+          <div class="input-wrapper" style="width:130px">
+            <i class="material-icons-round">tune</i>
+            <select id="mode-hasil" onchange="renderPeringkatHasil()">
+              <option value="TAN">TAN</option>
+              <option value="PUS_TUAI">HEKTAR</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Pilih Peringkat -->
+        <div class="input-group">
+          <label>
+            PERINGKAT
+            <span id="info-luas-header" style="float:right;color:var(--success);"></span>
+          </label>
+          <div class="input-wrapper">
+            <i class="material-icons-round">layers</i>
+            <select id="sel-pkt-hasil" onchange="renderTeamHasil()"></select>
+          </div>
+        </div>
+
+        <!-- Paparan jumlah live (TAN mode) -->
+        <div id="wrap-live-display" class="card"
+             style="background:rgba(255,181,71,0.12);border:1px solid rgba(255,181,71,0.30);
+                    text-align:center;padding:20px;margin-top:15px;display:none;box-shadow:none;">
+          <label id="lbl-display"
+                 style="color:var(--warning);margin-bottom:5px;">
+            JUMLAH TAN (HARI INI)
+          </label>
+          <div id="display-tan-live"
+               style="font-size:36px;font-weight:900;color:#e0921f;letter-spacing:-1px;">
+            0.00
+          </div>
+          <small style="color:rgba(255,181,71,0.85);font-size:11px;
+                        display:block;margin-top:5px;font-weight:700;">
+            Auto-Kira aktif. Sila tekan Save Master.
+          </small>
+        </div>
+
+        <!-- Status siap tuai / baki (PUS_TUAI mode) -->
+        <div id="box-status-tuai" class="info-status" style="display:none;">
+          <div class="info-item">
+            <span>SIAP TUAI</span>
+            <b id="valSiap">0.00 Ha</b>
+          </div>
+          <div class="info-divider"></div>
+          <div class="info-item">
+            <span>BAKI LUAS</span>
+            <b id="valBaki" style="color:var(--danger)">0.00 Ha</b>
+          </div>
+        </div>
+
+        <!-- Input team (diisi secara dinamik) -->
+        <div id="wrap-team-hasil" style="margin-top:20px;"></div>
+
+        <!-- Input tunggal hektar (PUS_TUAI mode) -->
+        <div id="wrap-single-hasil" class="input-group"
+             style="margin-top:25px;display:none;">
+          <label id="lbl-val-hasil">NILAI HEKTAR</label>
+          <input type="text" id="val-hasil" class="big-input"
+                 placeholder="0.00" inputmode="text"
+                 onfocus="onFocusInput(this,'hasil')"
+                 onblur="onBlurInput(this,'hasil')"
+                 oninput="onInputHandler(this,'hasil')">
+        </div>
+
+        <!-- Butang tindakan -->
+        <div style="margin-top:30px;border-top:1px dashed rgba(148,163,184,0.35);
+                    padding-top:20px;">
+          <button id="btnRefRumusan" class="btn-refresh"
+                  onclick="runAdmin('refreshRumusan')"
+                  style="display:none;margin-bottom:15px;">
+            <i class="material-icons-round">sync</i> REFRESH RUMUSAN
+          </button>
+          <button class="btn-success" onclick="processSaveMaster()">
+            <i class="material-icons-round">cloud_upload</i> SAVE MASTER
+          </button>
+        </div>
+
+      </div>
+    </div><!-- /page-hasil -->
+
+
+    <!-- ==================================================================
+         HALAMAN: BTB MUDA
+         ================================================================== -->
+    <div id="page-muda" class="page-section">
+      <div class="pill">MODE: BTB MUDA</div>
+      <div class="card">
+
+        <!-- Tarikh -->
+        <div class="input-group">
+          <div class="input-wrapper">
+            <i class="material-icons-round">calendar_today</i>
+            <input type="date" id="date-muda">
+          </div>
+        </div>
+
+        <!-- Pilih Peringkat -->
+        <div class="input-group">
+          <label>PERINGKAT</label>
+          <div class="input-wrapper">
+            <i class="material-icons-round">layers</i>
+            <select id="sel-pkt-muda" onchange="renderTeamMuda()">
+              <option value="PKT001G">PKT 001G</option>
+              <option value="PKT002">PKT 002</option>
+              <option value="PKT003G">PKT 003G</option>
+              <option value="PKT004A">PKT 004A</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Header stats (diisi secara dinamik) -->
+        <div id="stats-header-muda" class="stats-header"></div>
+
+        <!-- Input team (diisi secara dinamik) -->
+        <div id="wrap-team-muda" style="margin-top:20px;"></div>
+
+        <div style="margin-top:30px;">
+          <button class="btn-success" onclick="saveData('muda')">
+            <i class="material-icons-round">check_circle</i> SIMPAN MUDA
+          </button>
+        </div>
+
+      </div>
+    </div><!-- /page-muda -->
+
+
+    <!-- ==================================================================
+         HALAMAN: PENALTI
+         ================================================================== -->
+    <div id="page-penalti" class="page-section">
+      <div class="pill">MODE: PENALTI</div>
+      <div class="card">
+
+        <!-- Baris Tarikh + Jenis Penalti -->
+        <div style="display:flex;gap:15px;margin-bottom:20px;">
+          <div class="input-wrapper" style="flex:1">
+            <i class="material-icons-round">calendar_today</i>
+            <input type="date" id="date-penalti">
+          </div>
+          <div class="input-wrapper" style="width:130px">
+            <i class="material-icons-round">category</i>
+            <select id="type-penalti" onchange="renderPeringkatPenalti()">
+              <option value="MENGKAL">MENGKAL</option>
+              <option value="LAMA">LAMA</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Pilih Peringkat -->
+        <div class="input-group">
+          <label>PERINGKAT</label>
+          <div class="input-wrapper">
+            <i class="material-icons-round">layers</i>
+            <select id="sel-pkt-penalti" onchange="renderPeringkatPenalti()">
+              <option value="PKT001">PKT 001</option>
+              <option value="PKT001G">PKT 001G</option>
+              <option value="PKT002">PKT 002</option>
+              <option value="PKT003G">PKT 003G</option>
+              <option value="PKT004">PKT 004</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Input nilai -->
+        <div class="input-group" style="margin-top:25px;">
+          <label>
+            BILANGAN TANDAN
+            <span id="stat-penalti"
+                  style="float:right;font-weight:900;
+                         color:var(--primary);font-size:11px;">
+            </span>
+          </label>
+          <input type="text" id="val-penalti" class="big-input"
+                 placeholder="0" inputmode="text"
+                 onfocus="onFocusInput(this,'penalti')"
+                 onblur="onBlurInput(this,'penalti')"
+                 oninput="onInputHandler(this,'penalti')">
+        </div>
+
+        <div style="margin-top:30px;">
+          <button class="btn-danger" onclick="saveData('penalti')">
+            <i class="material-icons-round">error_outline</i> SIMPAN PENALTI
+          </button>
+        </div>
+
+      </div>
+    </div><!-- /page-penalti -->
+
+
+    <!-- ==================================================================
+         HALAMAN: REKOD TANDAN
+         ================================================================== -->
+    <div id="page-tandan" class="page-section">
+      <div class="pill">MODE: REKOD TANDAN</div>
+      <div class="card">
+
+        <!-- Tarikh -->
+        <div class="input-group">
+          <div class="input-wrapper">
+            <i class="material-icons-round">calendar_today</i>
+            <input type="date" id="date-tandan">
+          </div>
+        </div>
+
+        <!-- Pilih Peringkat -->
+        <div class="input-group">
+          <label>PERINGKAT</label>
+          <div class="input-wrapper">
+            <i class="material-icons-round">layers</i>
+            <select id="sel-pkt-tandan" onchange="renderTeamTandan()">
+              <option value="PKT004">PKT 004</option>
+              <option value="PKT001">PKT 001</option>
+              <option value="PKT002">PKT 002</option>
+              <option value="PKT001G">PKT 001G</option>
+              <option value="PKT003G">PKT 003G</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Header stats (diisi secara dinamik) -->
+        <div id="stats-header-tandan" class="stats-header"></div>
+
+        <!-- Input team (diisi secara dinamik) -->
+        <div id="wrap-team-tandan" style="margin-top:20px;"></div>
+
+        <div style="margin-top:30px;">
+          <button class="btn-warning" onclick="saveData('tandan')">
+            <i class="material-icons-round">inventory_2</i> SIMPAN TANDAN
+          </button>
+        </div>
+
+      </div>
+    </div><!-- /page-tandan -->
+
+
+    <!-- ==================================================================
+         HALAMAN: ADMIN & LAPORAN
+         ================================================================== -->
+    <div id="page-admin" class="page-section">
+      <div class="pill">ADMIN & LAPORAN</div>
+      <div class="card">
+
+        <label>JANA LAPORAN HARIAN</label>
+
+        <!-- Butang laporan -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;
+                    gap:15px;margin-top:15px;">
+          <button class="btn-po" onclick="getReport('PO')">
+            <i class="material-icons-round">description</i> PO
+          </button>
+          <button class="btn-rumusan" onclick="getReport('RUMUSAN')">
+            <i class="material-icons-round">summarize</i> RUMUSAN
+          </button>
+        </div>
+
+        <button class="btn-primary" onclick="getReport('ALL')"
+                style="margin-top:15px;">
+          <i class="material-icons-round">library_books</i> JANA SEMUA
+        </button>
+
+        <!-- Output laporan -->
+        <div id="reportResult" style="margin-top:20px;display:none;">
+          <textarea id="report-out"
+                    style="width:100%;height:200px;padding:15px;
+                           border-radius:16px;border:1px solid var(--border);
+                           background:var(--input-bg);font-family:monospace;
+                           color:var(--text-main);"
+                    readonly></textarea>
+          <button class="btn-success" onclick="copyText()"
+                  style="margin-top:15px;">
+            <i class="material-icons-round">content_copy</i> SALIN TEKS
+          </button>
+        </div>
+
+      </div>
+    </div><!-- /page-admin -->
+
+
+  </div><!-- /app-container -->
+
+
+  <!-- ======================================================================
+       JAVASCRIPT — config dahulu, kemudian app
+       ====================================================================== -->
+  <script src="js/config.js"></script>
+  <script src="js/app.js"></script>
+
+</body>
+</html>

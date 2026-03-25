@@ -1,0 +1,879 @@
+/* ============================================================================
+   STYLE.CSS — SISTEM GAYA e-HASIL FPMSB TENANG
+   ============================================================================
+   Semua CSS untuk PWA e-Hasil. Dipisah dari index.html untuk
+   kemudahan maintenance — ubah gaya tanpa kacau HTML/JS.
+
+   SUSUNAN:
+     1. CSS Variables (Tema Terang & Gelap)
+     2. Reset & Base
+     3. Layout (Body, Container)
+     4. Header
+     5. Sidebar & Overlay
+     6. Dashboard Cards
+     7. Cards & Pills
+     8. Form Elements (Input, Select, Label)
+     9. Buttons
+     10. Bulk Rows
+     11. Info Boxes & Badges
+     12. Loader & Toast
+     13. Page Sections & Animations
+   ============================================================================ */
+
+
+/* ============================================================================
+   1. CSS VARIABLES — TEMA TERANG (DEFAULT)
+   ============================================================================ */
+:root {
+  /* Brand */
+  --primary       : #4361ee;
+  --primary-2     : #3a0ca3;
+  --primary-grad  : linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%);
+
+  /* Semantic */
+  --success       : #05cd99;
+  --warning       : #ffb547;
+  --danger        : #ee5d50;
+
+  /* Surfaces & Text (Light) */
+  --bg-body       : #f4f7fe;
+  --surface       : #ffffff;
+  --surface-2     : #f9fbff;
+  --surface-3     : #f4f7fe;
+  --border        : rgba(15, 23, 42, 0.08);
+  --text-main     : #2b3674;
+  --text-muted    : #a3aed0;
+
+  /* Effects */
+  --shadow-card   : 0 20px 27px 0 rgba(0, 0, 0, 0.05);
+  --shadow-soft   : 0 12px 30px rgba(15, 23, 42, 0.10);
+  --radius        : 20px;
+
+  /* Button Glow */
+  --glow-primary  : 0 0 0 4px rgba(67, 97, 238, 0.18), 0 12px 30px rgba(67, 97, 238, 0.20);
+  --glow-success  : 0 0 0 4px rgba(5, 205, 153, 0.16), 0 12px 30px rgba(5, 205, 153, 0.18);
+  --glow-warning  : 0 0 0 4px rgba(255, 181, 71, 0.16), 0 12px 30px rgba(255, 181, 71, 0.18);
+  --glow-danger   : 0 0 0 4px rgba(238, 93, 80, 0.16),  0 12px 30px rgba(238, 93, 80, 0.18);
+
+  /* Toast & Loader */
+  --toast-bg      : #1b2559;
+  --loader-bg     : rgba(255, 255, 255, 0.9);
+
+  /* Input */
+  --input-bg      : #f4f7fe;
+  --input-bg-focus: #ffffff;
+  --input-ring    : 0 0 0 4px rgba(67, 97, 238, 0.12);
+
+  /* Sidebar */
+  --sidebar-bg    : rgba(255, 255, 255, 0.95);
+  --overlay-bg    : rgba(43, 54, 116, 0.3);
+}
+
+
+/* ============================================================================
+   TEMA GELAP — AUTO (ikut OS)
+   ============================================================================ */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg-body       : #0b1220;
+    --surface       : #0f172a;
+    --surface-2     : #0c1529;
+    --surface-3     : #0b1220;
+    --border        : rgba(148, 163, 184, 0.18);
+    --text-main     : #e6eaf5;
+    --text-muted    : rgba(148, 163, 184, 0.85);
+    --shadow-card   : 0 20px 40px rgba(0, 0, 0, 0.35);
+    --shadow-soft   : 0 14px 34px rgba(0, 0, 0, 0.35);
+    --toast-bg      : #0b1024;
+    --loader-bg     : rgba(0, 0, 0, 0.55);
+    --input-bg      : rgba(255, 255, 255, 0.06);
+    --input-bg-focus: rgba(255, 255, 255, 0.08);
+    --input-ring    : 0 0 0 4px rgba(67, 97, 238, 0.20);
+    --sidebar-bg    : rgba(15, 23, 42, 0.92);
+    --overlay-bg    : rgba(0, 0, 0, 0.55);
+  }
+}
+
+/* TEMA GELAP — MANUAL (paksa) */
+:root[data-theme="dark"] {
+  --bg-body       : #0b1220;
+  --surface       : #0f172a;
+  --surface-2     : #0c1529;
+  --surface-3     : #0b1220;
+  --border        : rgba(148, 163, 184, 0.18);
+  --text-main     : #e6eaf5;
+  --text-muted    : rgba(148, 163, 184, 0.85);
+  --shadow-card   : 0 20px 40px rgba(0, 0, 0, 0.35);
+  --shadow-soft   : 0 14px 34px rgba(0, 0, 0, 0.35);
+  --toast-bg      : #0b1024;
+  --loader-bg     : rgba(0, 0, 0, 0.55);
+  --input-bg      : rgba(255, 255, 255, 0.06);
+  --input-bg-focus: rgba(255, 255, 255, 0.08);
+  --input-ring    : 0 0 0 4px rgba(67, 97, 238, 0.20);
+  --sidebar-bg    : rgba(15, 23, 42, 0.92);
+  --overlay-bg    : rgba(0, 0, 0, 0.55);
+}
+
+
+/* ============================================================================
+   2. RESET & BASE
+   ============================================================================ */
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+::-webkit-scrollbar { display: none; }
+
+i.material-icons-round { user-select: none; }
+
+
+/* ============================================================================
+   3. LAYOUT — BODY & CONTAINER
+   ============================================================================ */
+body {
+  font-family   : 'Plus Jakarta Sans', sans-serif;
+  background    : radial-gradient(1100px 600px at 30% -10%, rgba(67, 97, 238, 0.16), transparent 55%),
+                  radial-gradient(900px 600px at 110% 10%, rgba(58, 12, 163, 0.14), transparent 55%),
+                  var(--bg-body);
+  color         : var(--text-main);
+  margin        : 0;
+  min-height    : 100vh;
+  padding-top   : 80px;
+  display       : flex;
+  justify-content: center;
+}
+
+.app-container {
+  width    : 100%;
+  max-width: 500px;
+  padding  : 20px;
+}
+
+
+/* ============================================================================
+   4. HEADER
+   ============================================================================ */
+.header {
+  position              : fixed;
+  top                   : 0;
+  left                  : 0;
+  width                 : 100%;
+  height                : 70px;
+  background            : var(--primary-grad);
+  color                 : white;
+  display               : flex;
+  align-items           : center;
+  padding               : 0 18px;
+  z-index               : 1000;
+  box-shadow            : 0 10px 30px rgba(67, 97, 238, 0.35);
+  border-bottom-left-radius : 30px;
+  border-bottom-right-radius: 30px;
+  overflow              : hidden;
+}
+
+/* Hiasan bulatan cahaya dalam header */
+.header::before {
+  content        : "";
+  position       : absolute;
+  inset          : -80px -120px auto auto;
+  width          : 240px;
+  height         : 240px;
+  background     : radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.28), transparent 60%);
+  transform      : rotate(12deg);
+  pointer-events : none;
+  opacity        : 0.7;
+}
+
+.menu-btn {
+  font-size   : 28px;
+  cursor      : pointer;
+  margin-right: 12px;
+  transition  : 0.2s;
+}
+.menu-btn:active { transform: scale(0.9); }
+
+.header h3 {
+  font-size  : 18px;
+  font-weight: 800;
+  margin     : 0;
+  flex-grow  : 1;
+  letter-spacing: 0.5px;
+}
+
+/* Butang toggle tema dalam header */
+.theme-toggle {
+  width          : 42px;
+  height         : 42px;
+  border-radius  : 14px;
+  border         : 1px solid rgba(255, 255, 255, 0.28);
+  background     : rgba(255, 255, 255, 0.14);
+  display        : flex;
+  align-items    : center;
+  justify-content: center;
+  cursor         : pointer;
+  transition     : 0.25s;
+  box-shadow     : 0 10px 25px rgba(0, 0, 0, 0.12);
+  user-select    : none;
+  z-index        : 2;
+}
+.theme-toggle:active { transform: scale(0.96); }
+.theme-toggle:hover  {
+  background: rgba(255, 255, 255, 0.18);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.16);
+}
+.theme-toggle i { font-size: 22px; }
+
+
+/* ============================================================================
+   5. SIDEBAR & OVERLAY
+   ============================================================================ */
+.sidebar {
+  position  : fixed;
+  top       : 0;
+  left      : -280px;
+  width     : 280px;
+  height    : 100%;
+  background: var(--sidebar-bg);
+  backdrop-filter: blur(12px);
+  z-index   : 1100;
+  transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 10px 0 40px rgba(0, 0, 0, 0.18);
+  display   : flex;
+  flex-direction: column;
+  border-right: 1px solid var(--border);
+}
+.sidebar.open { left: 0; }
+
+.overlay {
+  position  : fixed;
+  top       : 0;
+  left      : 0;
+  width     : 100%;
+  height    : 100%;
+  background: var(--overlay-bg);
+  z-index   : 1050;
+  display   : none;
+  backdrop-filter: blur(4px);
+}
+.overlay.open { display: block; }
+
+.sb-header {
+  height         : 180px;
+  background     : var(--primary-grad);
+  color          : white;
+  display        : flex;
+  flex-direction : column;
+  justify-content: center;
+  align-items    : center;
+  border-bottom-right-radius: 40px;
+}
+
+.sb-logo {
+  width        : 86px;
+  height       : 86px;
+  object-fit   : contain;
+  border-radius: 22px;
+  padding      : 10px;
+  background   : rgba(255, 255, 255, 0.14);
+  border       : 1px solid rgba(255, 255, 255, 0.28);
+  box-shadow   : 0 18px 38px rgba(0, 0, 0, 0.22);
+  transition   : 0.25s;
+}
+.sb-logo:active { transform: scale(0.98); }
+.sb-logo:hover  { transform: scale(1.05); }
+
+.sb-logo-text {
+  font-size     : 18px;
+  font-weight   : 800;
+  margin-top    : 10px;
+  letter-spacing: 1px;
+}
+
+.sb-menu {
+  flex-grow : 1;
+  padding   : 20px 0;
+  overflow-y: auto;
+}
+
+.sb-item {
+  padding       : 15px 30px;
+  display       : flex;
+  align-items   : center;
+  color         : var(--text-muted);
+  font-weight   : 700;
+  transition    : 0.2s;
+  border-left   : 4px solid transparent;
+  cursor        : pointer;
+  font-size     : 14px;
+}
+.sb-item i {
+  margin-right: 15px;
+  font-size   : 22px;
+  color       : var(--text-muted);
+}
+.sb-item.active {
+  background      : rgba(67, 97, 238, 0.10);
+  color           : var(--primary);
+  border-left-color: var(--primary);
+}
+.sb-item.active i { color: var(--primary); }
+
+
+/* ============================================================================
+   6. DASHBOARD CARDS
+   ============================================================================ */
+.welcome-box {
+  display      : flex;
+  align-items  : center;
+  gap          : 15px;
+  margin-bottom: 25px;
+}
+.welcome-box img {
+  width        : 60px;
+  height       : 60px;
+  border-radius: 16px;
+  box-shadow   : var(--shadow-card);
+  background   : var(--surface);
+  padding      : 5px;
+}
+.welcome-box h2 {
+  margin     : 0;
+  font-size  : 18px;
+  font-weight: 900;
+  color      : var(--text-main);
+}
+.welcome-box p {
+  margin     : 0;
+  font-size  : 13px;
+  color      : var(--text-muted);
+  font-weight: 600;
+}
+
+/* Grid menu pantas (4 + 1 kad) */
+.qa-grid {
+  display              : grid;
+  grid-template-columns: 1fr 1fr;
+  gap                  : 15px;
+  margin-top           : 25px;
+  margin-bottom        : 40px;
+}
+
+.qa-card {
+  background   : linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.00)), var(--surface);
+  border       : 1px solid var(--border);
+  border-radius: 20px;
+  padding      : 20px 15px;
+  text-align   : center;
+  box-shadow   : var(--shadow-card);
+  cursor       : pointer;
+  transition   : 0.2s;
+}
+.qa-card:active { transform: scale(0.95); }
+.qa-card i {
+  font-size    : 32px;
+  color        : var(--primary);
+  margin-bottom: 10px;
+  display      : block;
+}
+.qa-card span {
+  font-size  : 12px;
+  font-weight: 800;
+  color      : var(--text-main);
+}
+
+/* Kad prestasi PKT */
+.dash-card {
+  background   : var(--surface);
+  border       : 1px solid var(--border);
+  border-radius: 24px;
+  padding      : 20px;
+  margin-bottom: 20px;
+  box-shadow   : var(--shadow-card);
+}
+.dash-card.rumusan {
+  border    : 2px solid var(--primary);
+  background: linear-gradient(180deg, rgba(67, 97, 238, 0.05), var(--surface));
+}
+
+.dc-header {
+  display        : flex;
+  justify-content: space-between;
+  align-items    : center;
+  border-bottom  : 1px dashed var(--border);
+  padding-bottom : 12px;
+  margin-bottom  : 15px;
+}
+.dc-title {
+  font-size  : 16px;
+  font-weight: 900;
+  color      : var(--primary);
+  display    : flex;
+  align-items: center;
+  gap        : 8px;
+}
+.dc-luas {
+  font-size    : 12px;
+  font-weight  : 800;
+  color        : var(--success);
+  background   : rgba(5, 205, 153, 0.1);
+  padding      : 4px 10px;
+  border-radius: 10px;
+}
+
+.dc-grid {
+  display              : grid;
+  grid-template-columns: 1fr 1fr;
+  gap                  : 10px;
+  margin-bottom        : 20px;
+}
+.dc-box {
+  background   : var(--input-bg);
+  padding      : 12px;
+  border-radius: 14px;
+  text-align   : center;
+  border       : 1px solid var(--border);
+}
+.dc-box span {
+  font-size     : 10px;
+  font-weight   : 800;
+  color         : var(--text-muted);
+  text-transform: uppercase;
+  display       : block;
+  margin-bottom : 5px;
+}
+.dc-val {
+  font-size  : 16px;
+  font-weight: 900;
+  color      : var(--text-main);
+}
+.dc-sub {
+  font-size  : 11px;
+  font-weight: 700;
+  color      : var(--text-muted);
+  margin-top : 3px;
+  display    : block;
+}
+
+/* Progress bar prestasi */
+.pb-wrap { margin-bottom: 15px; }
+
+.pb-labels {
+  display        : flex;
+  justify-content: space-between;
+  font-size      : 11px;
+  font-weight    : 800;
+  margin-bottom  : 6px;
+  color          : var(--text-main);
+}
+.pb-pct { font-weight: 900; }
+
+.pb-bg {
+  width        : 100%;
+  height       : 10px;
+  background   : var(--input-bg);
+  border-radius: 10px;
+  overflow     : hidden;
+  box-shadow   : inset 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+.pb-fill {
+  height       : 100%;
+  border-radius: 10px;
+  transition   : width 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+
+/* ============================================================================
+   7. CARDS & PILLS
+   ============================================================================ */
+.card {
+  background   : linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.00)), var(--surface);
+  border-radius: var(--radius);
+  padding      : 25px;
+  margin-bottom: 25px;
+  box-shadow   : var(--shadow-card);
+  border       : 1px solid var(--border);
+}
+
+.pill {
+  background    : rgba(67, 97, 238, 0.14);
+  color         : var(--primary);
+  padding       : 8px 16px;
+  border-radius : 30px;
+  font-size     : 11px;
+  font-weight   : 900;
+  letter-spacing: 1px;
+  width         : fit-content;
+  margin        : 0 auto 20px auto;
+  text-transform: uppercase;
+  display       : block;
+  border        : 1px solid rgba(67, 97, 238, 0.18);
+  box-shadow    : 0 12px 22px rgba(67, 97, 238, 0.10);
+}
+
+
+/* ============================================================================
+   8. FORM ELEMENTS
+   ============================================================================ */
+.input-group { margin-bottom: 20px; }
+
+label {
+  display       : block;
+  font-size     : 12px;
+  font-weight   : 800;
+  color         : var(--text-muted);
+  margin-bottom : 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.input-wrapper { position: relative; }
+.input-wrapper i {
+  position : absolute;
+  left     : 15px;
+  top      : 50%;
+  transform: translateY(-50%);
+  color    : var(--text-muted);
+  font-size: 20px;
+}
+
+select,
+input,
+textarea {
+  width         : 100%;
+  padding       : 14px 15px 14px 45px;
+  border        : 1px solid var(--border);
+  background    : var(--input-bg);
+  border-radius : 15px;
+  font-size     : 15px;
+  font-weight   : 650;
+  font-family   : 'Plus Jakarta Sans', sans-serif;
+  color         : var(--text-main);
+  transition    : 0.25s;
+  appearance    : none;
+  box-shadow    : inset 0 0 0 1px rgba(255, 255, 255, 0.02);
+}
+
+select:focus,
+input:focus,
+textarea:focus {
+  background  : var(--input-bg-focus);
+  border-color: rgba(67, 97, 238, 0.65);
+  box-shadow  : var(--input-ring);
+  outline     : none;
+}
+
+/* Input besar untuk nilai tunggal */
+.big-input {
+  font-size     : 32px !important;
+  font-weight   : 900;
+  text-align    : center;
+  padding-left  : 20px !important;
+  color         : var(--primary);
+  letter-spacing: -1px;
+}
+
+
+/* ============================================================================
+   9. BUTTONS
+   ============================================================================ */
+button {
+  width          : 100%;
+  padding        : 16px;
+  border         : 1px solid rgba(255, 255, 255, 0.10);
+  border-radius  : 16px;
+  font-family    : 'Plus Jakarta Sans', sans-serif;
+  font-weight    : 900;
+  font-size      : 14px;
+  text-transform : uppercase;
+  cursor         : pointer;
+  letter-spacing : 0.5px;
+  transition     : 0.18s ease;
+  display        : flex;
+  align-items    : center;
+  justify-content: center;
+  gap            : 10px;
+  position       : relative;
+  overflow       : hidden;
+  transform      : translateZ(0);
+  user-select    : none;
+}
+button:active { transform: scale(0.985); }
+
+/* Ripple effect (pure CSS) */
+button::after {
+  content      : "";
+  position     : absolute;
+  width        : 10px;
+  height       : 10px;
+  top          : 50%;
+  left         : 50%;
+  transform    : translate(-50%, -50%) scale(1);
+  opacity      : 0;
+  border-radius: 999px;
+  background   : rgba(255, 255, 255, 0.35);
+  pointer-events: none;
+}
+button:active::after { animation: ripple 480ms ease-out; }
+
+@keyframes ripple {
+  0%   { opacity: 0.35; transform: translate(-50%, -50%) scale(1); }
+  100% { opacity: 0;    transform: translate(-50%, -50%) scale(18); }
+}
+
+/* Primary — Biru */
+.btn-primary {
+  background: linear-gradient(135deg, #4361ee, #3a0ca3);
+  color     : #fff;
+  box-shadow: 0 12px 28px rgba(67, 97, 238, 0.25);
+}
+.btn-primary:hover  { box-shadow: var(--glow-primary); }
+.btn-primary:active { box-shadow: 0 8px 18px rgba(67, 97, 238, 0.20); }
+
+/* Success — Hijau */
+.btn-success {
+  background: linear-gradient(135deg, #05cd99, #02a176);
+  color     : white;
+  box-shadow: 0 12px 26px rgba(5, 205, 153, 0.22);
+}
+.btn-success:hover  { box-shadow: var(--glow-success); }
+.btn-success:active { box-shadow: 0 8px 18px rgba(5, 205, 153, 0.18); }
+
+/* Warning — Oren */
+.btn-warning {
+  background: linear-gradient(135deg, #ffb547, #e0921f);
+  color     : white;
+  box-shadow: 0 12px 26px rgba(255, 181, 71, 0.22);
+}
+.btn-warning:hover  { box-shadow: var(--glow-warning); }
+.btn-warning:active { box-shadow: 0 8px 18px rgba(255, 181, 71, 0.18); }
+
+/* Danger — Merah */
+.btn-danger {
+  background: linear-gradient(135deg, #ee5d50, #c93b2e);
+  color     : white;
+  box-shadow: 0 12px 26px rgba(238, 93, 80, 0.22);
+}
+.btn-danger:hover  { box-shadow: var(--glow-danger); }
+.btn-danger:active { box-shadow: 0 8px 18px rgba(238, 93, 80, 0.18); }
+
+/* Secondary — Neutral */
+.btn-secondary {
+  background: linear-gradient(180deg, rgba(255,255,255,0.14), rgba(255,255,255,0.02)), var(--surface);
+  border    : 1px solid var(--border);
+  color     : var(--text-main);
+  box-shadow: var(--shadow-soft);
+}
+.btn-secondary:hover {
+  box-shadow: 0 0 0 4px rgba(148, 163, 184, 0.12), var(--shadow-soft);
+  transform : translateY(-1px);
+}
+.btn-secondary:active {
+  transform : scale(0.985);
+  box-shadow: var(--shadow-soft);
+}
+
+/* Refresh — Ungu */
+.btn-refresh {
+  background: linear-gradient(135deg, #6d28d9, #4f46e5);
+  color     : #fff;
+  box-shadow: 0 12px 26px rgba(79, 70, 229, 0.22);
+}
+.btn-refresh:hover  { box-shadow: 0 0 0 4px rgba(79,70,229,0.18), 0 12px 30px rgba(79,70,229,0.22); }
+.btn-refresh:active { box-shadow: 0 8px 18px rgba(79, 70, 229, 0.18); }
+
+/* PO — Cyan */
+.btn-po {
+  background: linear-gradient(135deg, #06b6d4, #0ea5e9);
+  color     : #fff;
+  box-shadow: 0 12px 26px rgba(14, 165, 233, 0.22);
+}
+.btn-po:hover  { box-shadow: 0 0 0 4px rgba(14,165,233,0.18), 0 12px 30px rgba(14,165,233,0.22); }
+.btn-po:active { box-shadow: 0 8px 18px rgba(14, 165, 233, 0.18); }
+
+/* Rumusan — Pink-Ungu */
+.btn-rumusan {
+  background: linear-gradient(135deg, #ec4899, #8b5cf6);
+  color     : #fff;
+  box-shadow: 0 12px 26px rgba(236, 72, 153, 0.22);
+}
+.btn-rumusan:hover  { box-shadow: 0 0 0 4px rgba(236,72,153,0.18), 0 12px 30px rgba(139,92,246,0.18); }
+.btn-rumusan:active { box-shadow: 0 8px 18px rgba(236, 72, 153, 0.18); }
+
+
+/* ============================================================================
+   10. BULK ROWS (Input team per baris)
+   ============================================================================ */
+.bulk-row {
+  display      : flex;
+  align-items  : center;
+  gap          : 15px;
+  margin-bottom: 12px;
+  padding      : 10px 15px;
+  background   : linear-gradient(180deg, rgba(255,255,255,0.10), rgba(255,255,255,0.00)), var(--surface);
+  border       : 1px solid var(--border);
+  border-radius: 16px;
+  transition   : 0.18s ease;
+  box-shadow   : 0 10px 20px rgba(0, 0, 0, 0.06);
+}
+.bulk-row:focus-within {
+  border-color: rgba(67, 97, 238, 0.55);
+  box-shadow  : var(--input-ring);
+  transform   : translateX(4px);
+}
+.bulk-row label {
+  flex          : 1;
+  margin        : 0;
+  color         : var(--text-main);
+  font-size     : 13px;
+  font-weight   : 800;
+  text-transform: none;
+}
+.bulk-row input {
+  flex        : 1;
+  padding     : 10px;
+  padding-left: 15px;
+  text-align  : right;
+  background  : var(--input-bg);
+  border-radius: 10px;
+  font-weight : 900;
+  color       : var(--primary);
+}
+
+
+/* ============================================================================
+   11. INFO BOXES & BADGES
+   ============================================================================ */
+
+/* Kotak status siap tuai / baki */
+.info-status {
+  background   : rgba(5, 205, 153, 0.12);
+  border       : 1px solid rgba(5, 205, 153, 0.22);
+  border-radius: 16px;
+  padding      : 15px;
+  margin       : 20px 0;
+  display      : flex;
+  justify-content: space-between;
+  align-items  : center;
+}
+.info-item {
+  text-align: center;
+  width     : 45%;
+}
+.info-item span {
+  font-size : 11px;
+  color     : rgba(5, 205, 153, 0.95);
+  font-weight: 900;
+  opacity   : 0.9;
+}
+.info-item b {
+  display       : block;
+  font-size     : 18px;
+  color         : var(--success);
+  margin-top    : 2px;
+  letter-spacing: -0.5px;
+  font-weight   : 900;
+}
+.info-divider {
+  width     : 2px;
+  height    : 30px;
+  background: rgba(5, 205, 153, 0.22);
+}
+
+/* Header stats (jumlah team) */
+.stats-header {
+  background   : linear-gradient(135deg, rgba(67,97,238,0.14), rgba(67,97,238,0.05));
+  color        : var(--primary);
+  padding      : 12px;
+  border-radius: 14px;
+  margin-bottom: 20px;
+  font-size    : 12px;
+  font-weight  : 900;
+  text-align   : center;
+  border       : 1px solid rgba(67, 97, 238, 0.18);
+  display      : none;
+  box-shadow   : 0 12px 24px rgba(67, 97, 238, 0.10);
+}
+
+/* Badge nombor kecil di sebelah nama team */
+.stat-badge {
+  font-size    : 10px;
+  color        : white;
+  background   : rgba(148, 163, 184, 0.85);
+  padding      : 3px 8px;
+  border-radius: 8px;
+  margin-left  : 6px;
+  vertical-align: middle;
+  font-weight  : 900;
+}
+
+
+/* ============================================================================
+   12. LOADER & TOAST
+   ============================================================================ */
+
+/* Full screen loading overlay */
+#loader {
+  position       : fixed;
+  top            : 0;
+  left           : 0;
+  width          : 100%;
+  height         : 100%;
+  background     : var(--loader-bg);
+  backdrop-filter: blur(6px);
+  display        : flex;
+  flex-direction : column;
+  justify-content: center;
+  align-items    : center;
+  z-index        : 2000;
+  display        : none;
+}
+
+.spinner {
+  width       : 50px;
+  height      : 50px;
+  border      : 5px solid rgba(255, 255, 255, 0.25);
+  border-top  : 5px solid var(--primary);
+  border-radius: 50%;
+  animation   : spin 0.8s linear infinite;
+}
+@keyframes spin {
+  0%   { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Toast notifikasi */
+#toast-box {
+  position     : fixed;
+  bottom       : 30px;
+  left         : 50%;
+  transform    : translateX(-50%) translateY(150px);
+  min-width    : 320px;
+  padding      : 16px 24px;
+  background   : linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.00)), var(--toast-bg);
+  color        : #fff;
+  border-radius: 50px;
+  display      : flex;
+  align-items  : center;
+  gap          : 15px;
+  z-index      : 3000;
+  box-shadow   : 0 18px 50px rgba(0, 0, 0, 0.35);
+  border       : 1px solid rgba(255, 255, 255, 0.10);
+  transition   : 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+#toast-box.show  { transform: translateX(-50%) translateY(0); }
+#toast-box.success i { color: var(--success); }
+#toast-box.error i   { color: var(--danger); }
+#toast-box.warning i { color: var(--warning); }
+
+
+/* ============================================================================
+   13. PAGE SECTIONS & ANIMATIONS
+   ============================================================================ */
+.page-section         { display: none; animation: fadeUp 0.35s ease-out; }
+.page-section.active  { display: block; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
