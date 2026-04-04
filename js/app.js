@@ -156,6 +156,7 @@ function nav(pageId, menuEl) {
   menuEl?.classList.add("active");
 
   toggleMenu();
+  if (pageId === "page-grafik") initChartPage();
 }
 
 
