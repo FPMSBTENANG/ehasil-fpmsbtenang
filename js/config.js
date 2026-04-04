@@ -92,3 +92,57 @@ const PROGRESS_COLOR = {
  * Nilai: 'dark' | 'light' | null (ikut OS)
  */
 const THEME_KEY = "eh_tema";
+
+// ============================================================================
+// 5. KONFIGURASI GRAF (CHART.JS)
+// ============================================================================
+
+/**
+ * Warna standard untuk semua graf dalam sistem.
+ * Konsisten dengan tema biru app.
+ */
+const CHART_COLORS = {
+  // Bar — tahun semasa
+  barCurrent   : "rgba(67, 97, 238, 0.80)",   // Biru solid
+  barCurrentBdr: "rgba(67, 97, 238, 1.00)",
+
+  // Bar — tahun lepas (lebih pudar)
+  barPrev      : "rgba(67, 97, 238, 0.25)",
+  barPrevBdr   : "rgba(67, 97, 238, 0.50)",
+
+  // Line — target
+  lineTarget   : "#ffb547",   // Kuning/oren
+
+  // Pusingan Tuai
+  barPusTuai   : "rgba(5, 205, 153, 0.75)",   // Hijau
+  barPusTuaiBdr: "rgba(5, 205, 153, 1.00)",
+  lineLuas     : "#4CAF50",
+
+  // Muda
+  barMuda      : "rgba(33, 150, 243, 0.75)",  // Biru cerah
+  barMudaBdr   : "rgba(33, 150, 243, 1.00)",
+
+  // Mengkal
+  barMengkal   : "rgba(238, 93, 80, 0.75)",   // Merah
+  barMengkalBdr: "rgba(238, 93, 80, 1.00)",
+
+  // Grid dan label
+  grid         : "rgba(163, 174, 208, 0.15)",
+  label        : "#a3aed0"
+};
+
+/**
+ * Senarai PKT untuk dropdown chart (sama dengan HASIL_CFG.pkt).
+ * Diulang di sini supaya config.js lengkap tanpa rujuk HASIL_CFG.
+ */
+const CHART_PKT_LIST = ["RUMUSAN", "PKT004", "PKT001", "PKT002", "PKT001G", "PKT003G"];
+
+/**
+ * Label jenis graf untuk tab selector.
+ */
+const CHART_TYPES = [
+  { key: "hasil",   label: "📈 Hasil",   unit: "Tan"  },
+  { key: "pusTuai", label: "🌾 Pusingan", unit: "Ha"   },
+  { key: "muda",    label: "🌿 Muda",    unit: "Tdn"  },
+  { key: "mengkal", label: "⚠️ Mengkal",  unit: "Tdn"  }
+];
