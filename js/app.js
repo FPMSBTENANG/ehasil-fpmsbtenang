@@ -1216,17 +1216,69 @@ function _baseChartConfig(labels, datasets, yUnit) {
 function _renderChartStats(payload) {
   const container = document.getElementById("chart-stats");
   const type      = _chartState.type;
-  const tahun     = _chartState.tahun;
 
+  // ── PUSINGAN TUAI — stat khas ──────────────────────────────────────
+  if (type === "pusTuai") {
+    const d = payload.pusTuai;
+    container.innerHTML = `
+      <div style="background:var(--input-bg);padding:12px 8px;
+                  border-radius:12px;text-align:center;
+                  border:1px solid var(--border);">
+        <div style="font-size:9px;font-weight:800;color:var(--text-muted);
+                    text-transform:uppercase;margin-bottom:4px;">
+          HEKTAR DITUAI
+        </div>
+        <div style="font-size:15px;font-weight:900;color:var(--primary);">
+          ${d.totalYTD.toFixed(2)}
+        </div>
+        <div style="font-size:9px;color:var(--text-muted);
+                    font-weight:700;margin-top:3px;">
+          Baki: ${d.baki.toFixed(2)} Ha
+        </div>
+      </div>
+
+      <div style="background:var(--input-bg);padding:12px 8px;
+                  border-radius:12px;text-align:center;
+                  border:1px solid var(--border);">
+        <div style="font-size:9px;font-weight:800;color:var(--text-muted);
+                    text-transform:uppercase;margin-bottom:4px;">
+          PUS B.I
+        </div>
+        <div style="font-size:15px;font-weight:900;color:var(--primary);">
+          ${d.bi.toFixed(2)}
+        </div>
+        <div style="font-size:9px;color:var(--text-muted);
+                    font-weight:700;margin-top:3px;">
+          Bulan Terkini
+        </div>
+      </div>
+
+      <div style="background:var(--input-bg);padding:12px 8px;
+                  border-radius:12px;text-align:center;
+                  border:1px solid var(--border);">
+        <div style="font-size:9px;font-weight:800;color:var(--text-muted);
+                    text-transform:uppercase;margin-bottom:4px;">
+          PUS H.B.I
+        </div>
+        <div style="font-size:15px;font-weight:900;color:var(--primary);">
+          ${d.hbi.toFixed(2)}
+        </div>
+        <div style="font-size:9px;color:var(--text-muted);
+                    font-weight:700;margin-top:3px;">
+          YTD
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  // ── JENIS LAIN — stat standard ─────────────────────────────────────
   let values = [];
   let unit   = "";
 
   if (type === "hasil") {
     values = payload.hasil.capaiIni.filter(v => v !== null);
     unit   = "Tan";
-  } else if (type === "pusTuai") {
-    values = payload.pusTuai.hektarBulan.filter(v => v !== null);
-    unit   = "Ha";
   } else if (type === "muda") {
     values = payload.muda.total.filter(v => v !== null);
     unit   = "Tdn";
@@ -1240,12 +1292,12 @@ function _renderChartStats(payload) {
     return;
   }
 
-  const jumlah  = values.reduce((s, v) => s + v, 0);
-  const maxVal  = Math.max(...values);
-  const minVal  = Math.min(...values);
+  const jumlah = values.reduce((s, v) => s + v, 0);
+  const maxVal = Math.max(...values);
+  const minVal = Math.min(...values);
 
   const stats = [
-    { label: "Jumlah YTD",   val: jumlah.toFixed(2),  unit },
+    { label: "Jumlah YTD",    val: jumlah.toFixed(2), unit },
     { label: "Bulan Terbaik", val: maxVal.toFixed(2), unit },
     { label: "Bulan Terendah",val: minVal.toFixed(2), unit }
   ];
