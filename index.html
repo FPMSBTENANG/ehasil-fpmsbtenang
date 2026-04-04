@@ -19,6 +19,9 @@
   <!-- CSS -->
   <link rel="stylesheet" href="css/style.css">
 
+  <!-- Chart.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+
   <!-- Tema — apply sebelum render untuk elak flash -->
   <script>
     (function() {
@@ -101,6 +104,10 @@
            onclick="nav('page-tandan', this)">
         <i class="material-icons-round">inventory_2</i>REKOD TANDAN
       </div>
+      <div class="sb-item" id="menu-grafik"
+           onclick="nav('page-grafik', this)">
+        <i class="material-icons-round">show_chart</i>ANALISIS GRAF
+      </div>
       <div class="sb-item" id="menu-admin"
            onclick="nav('page-admin', this)">
         <i class="material-icons-round">settings</i>ADMIN & REPORT
@@ -167,7 +174,12 @@
           <i class="material-icons-round">inventory_2</i>
           <span>REKOD TANDAN</span>
         </div>
-        <div class="qa-card" style="grid-column:span 2"
+        <div class="qa-card"
+             onclick="nav('page-grafik', document.getElementById('menu-grafik'))">
+          <i class="material-icons-round">show_chart</i>
+          <span>ANALISIS GRAF</span>
+        </div>
+        <div class="qa-card"
              onclick="nav('page-admin', document.getElementById('menu-admin'))">
           <i class="material-icons-round">settings</i>
           <span>ADMIN & LAPORAN</span>
@@ -426,6 +438,72 @@
 
       </div>
     </div><!-- /page-tandan -->
+
+
+    <!-- ==================================================================
+         HALAMAN: ANALISIS GRAF
+         ================================================================== -->
+    <div id="page-grafik" class="page-section">
+      <div class="pill">ANALISIS GRAF</div>
+      <div class="card">
+
+        <!-- Kawalan atas: PKT + Tahun -->
+        <div style="display:flex;gap:12px;margin-bottom:16px;">
+          <div class="input-wrapper" style="flex:1">
+            <i class="material-icons-round">layers</i>
+            <select id="chart-pkt" onchange="onChartFilterChange()"></select>
+          </div>
+          <div class="input-wrapper" style="width:110px">
+            <i class="material-icons-round">calendar_today</i>
+            <select id="chart-tahun" onchange="onChartFilterChange()"></select>
+          </div>
+        </div>
+
+        <!-- Tab jenis graf -->
+        <div id="chart-tabs"
+             style="display:flex;gap:8px;margin-bottom:16px;overflow-x:auto;
+                    padding-bottom:4px;">
+        </div>
+
+        <!-- Toggle perbandingan tahun -->
+        <div style="display:flex;align-items:center;gap:10px;
+                    margin-bottom:16px;padding:10px 14px;
+                    background:var(--input-bg);border-radius:12px;
+                    border:1px solid var(--border);">
+          <input type="checkbox" id="chart-compare"
+                 onchange="onChartFilterChange()"
+                 style="width:18px;height:18px;
+                        accent-color:var(--primary);padding:0;">
+          <label for="chart-compare"
+                 style="margin:0;font-size:12px;font-weight:700;
+                        text-transform:none;color:var(--text-main);
+                        cursor:pointer;">
+            Bandingkan dengan tahun lepas
+          </label>
+        </div>
+
+        <!-- Canvas chart -->
+        <div style="position:relative;height:280px;">
+          <canvas id="mainChart"></canvas>
+          <div id="chart-loader"
+               style="position:absolute;inset:0;display:flex;
+                      align-items:center;justify-content:center;
+                      background:var(--surface);border-radius:8px;">
+            <div class="spinner"
+                 style="width:30px;height:30px;border-width:3px;
+                        border-top-color:var(--primary);">
+            </div>
+          </div>
+        </div>
+
+        <!-- Stats ringkas bawah graf -->
+        <div id="chart-stats"
+             style="display:grid;grid-template-columns:repeat(3,1fr);
+                    gap:10px;margin-top:16px;">
+        </div>
+
+      </div>
+    </div><!-- /page-grafik -->
 
 
     <!-- ==================================================================
