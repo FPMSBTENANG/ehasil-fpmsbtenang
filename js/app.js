@@ -938,3 +938,399 @@ async function apiCall(action, data) {
   });
   return response.json();
 }
+
+// ============================================================================
+// 16. GRAF & ANALISIS (CHART.JS)
+// ============================================================================
+
+/** Instance Chart.js aktif — disimpan untuk destroy sebelum render baru */
+let _chartInstance = null;
+
+/** Cache data chart — elak fetch berulang bila tukar tab sahaja */
+let _chartDataCache = null;
+
+/** State semasa: tab aktif, PKT, tahun */
+let _chartState = {
+  type    : "hasil",
+  pkt     : "RUMUSAN",
+  tahun   : new Date().getFullYear(),
+  compare : false
+};
+
+/**
+ * Inisialisasi halaman graf — render dropdown + tabs.
+ * Dipanggil sekali semasa nav ke page-grafik.
+ */
+function initChartPage() {
+  _renderChartPktDropdown();
+  _renderChartTahunDropdown();
+  _renderChartTabs();
+  loadChartData();
+}
+
+/**
+ * Dipanggil bila mana-mana kawalan berubah (PKT, tahun, compare).
+ * Invalidate cache dan reload.
+ */
+function onChartFilterChange() {
+  const pkt     = document.getElementById("chart-pkt").value;
+  const tahun   = Number(document.getElementById("chart-tahun").value);
+  const compare = document.getElementById("chart-compare").checked;
+
+  const changed = (pkt !== _chartState.pkt || tahun !== _chartState.tahun);
+  _chartState.pkt     = pkt;
+  _chartState.tahun   = tahun;
+  _chartState.compare = compare;
+
+  if (changed) {
+    _chartDataCache = null; // PKT/tahun berubah → perlu fetch semula
+  }
+
+  loadChartData();
+}
+
+/**
+ * Fetch data chart dari backend dan render.
+ */
+async function loadChartData() {
+  _showChartLoader(true);
+
+  try {
+    if (!_chartDataCache) {
+      const res = await apiCall("getChartData", {
+        pkt   : _chartState.pkt,
+        tahun : _chartState.tahun
+      });
+
+      if (!res.ok) {
+        _showChartError(res.message);
+        return;
+      }
+
+      _chartDataCache = res.payload;
+    }
+
+    _renderChart(_chartDataCache);
+    _renderChartStats(_chartDataCache);
+
+  } catch (e) {
+    _showChartError("Ralat sambungan ke server.");
+  } finally {
+    _showChartLoader(false);
+  }
+}
+
+/**
+ * Render graf berdasarkan jenis tab aktif.
+ */
+function _renderChart(payload) {
+  const canvas = document.getElementById("mainChart");
+  const labels = payload.labels; // ["JAN","FEB",..."DIS"]
+  const type   = _chartState.type;
+
+  // Destroy instance lama sebelum buat baru
+  if (_chartInstance) {
+    _chartInstance.destroy();
+    _chartInstance = null;
+  }
+
+  let config;
+
+  if (type === "hasil") {
+    config = _buildHasilChartConfig(labels, payload.hasil);
+  } else if (type === "pusTuai") {
+    config = _buildPusTuaiChartConfig(labels, payload.pusTuai);
+  } else if (type === "muda") {
+    config = _buildSimpleBarConfig(
+      labels, payload.muda.total,
+      "Tandan Muda", CHART_COLORS.barMuda, CHART_COLORS.barMudaBdr,
+      "Tandan"
+    );
+  } else if (type === "mengkal") {
+    config = _buildSimpleBarConfig(
+      labels, payload.mengkal.total,
+      "Tandan Mengkal", CHART_COLORS.barMengkal, CHART_COLORS.barMengkalBdr,
+      "Tandan"
+    );
+  }
+
+  _chartInstance = new Chart(canvas, config);
+}
+
+/**
+ * Bina konfigurasi chart HASIL (Bar capai + Line target + Bar tahun lepas).
+ */
+function _buildHasilChartConfig(labels, data) {
+  const datasets = [
+    {
+      type           : "bar",
+      label          : `Capai ${_chartState.tahun} (Tan)`,
+      data           : data.capaiIni,
+      backgroundColor: CHART_COLORS.barCurrent,
+      borderColor    : CHART_COLORS.barCurrentBdr,
+      borderWidth    : 1,
+      borderRadius   : 4,
+      order          : 2
+    },
+    {
+      type       : "line",
+      label      : "Target (Tan)",
+      data       : data.targetIni,
+      borderColor: CHART_COLORS.lineTarget,
+      borderWidth: 2.5,
+      pointRadius: 3,
+      pointBackgroundColor: CHART_COLORS.lineTarget,
+      fill       : false,
+      tension    : 0.3,
+      order      : 1
+    }
+  ];
+
+  // Tambah bar tahun lepas jika toggle aktif
+  if (_chartState.compare && data.capaiLps) {
+    datasets.push({
+      type           : "bar",
+      label          : `Capai ${_chartState.tahun - 1} (Tan)`,
+      data           : data.capaiLps,
+      backgroundColor: CHART_COLORS.barPrev,
+      borderColor    : CHART_COLORS.barPrevBdr,
+      borderWidth    : 1,
+      borderRadius   : 4,
+      order          : 3
+    });
+  }
+
+  return _baseChartConfig(labels, datasets, "Tan");
+}
+
+/**
+ * Bina konfigurasi chart PUSINGAN TUAI (Bar hektar + Line luas PKT).
+ */
+function _buildPusTuaiChartConfig(labels, data) {
+  const luasLine = new Array(12).fill(data.luasPKT);
+
+  const datasets = [
+    {
+      type           : "bar",
+      label          : "Hektar Dituai",
+      data           : data.hektarBulan,
+      backgroundColor: CHART_COLORS.barPusTuai,
+      borderColor    : CHART_COLORS.barPusTuaiBdr,
+      borderWidth    : 1,
+      borderRadius   : 4,
+      order          : 2
+    },
+    {
+      type       : "line",
+      label      : "Luas PKT (Ha)",
+      data       : luasLine,
+      borderColor: CHART_COLORS.lineLuas,
+      borderWidth: 2,
+      borderDash : [6, 4],
+      pointRadius: 0,
+      fill       : false,
+      order      : 1
+    }
+  ];
+
+  return _baseChartConfig(labels, datasets, "Ha");
+}
+
+/**
+ * Bina konfigurasi chart bar ringkas (Muda/Mengkal).
+ */
+function _buildSimpleBarConfig(labels, data, label, bgColor, borderColor, unit) {
+  const datasets = [{
+    type           : "bar",
+    label,
+    data,
+    backgroundColor: bgColor,
+    borderColor,
+    borderWidth    : 1,
+    borderRadius   : 4
+  }];
+
+  return _baseChartConfig(labels, datasets, unit);
+}
+
+/**
+ * Konfigurasi asas Chart.js yang dikongsi semua jenis graf.
+ * Dioptimakan untuk skrin telefon kecil.
+ */
+function _baseChartConfig(labels, datasets, yUnit) {
+  const isDark = document.documentElement.getAttribute("data-theme") === "dark"
+    || (!document.documentElement.getAttribute("data-theme")
+       && window.matchMedia?.("(prefers-color-scheme: dark)").matches);
+
+  const labelColor = isDark ? "rgba(230,234,245,0.7)" : CHART_COLORS.label;
+
+  return {
+    type : "bar",
+    data : { labels, datasets },
+    options: {
+      responsive         : true,
+      maintainAspectRatio: false,
+      interaction: { mode: "index", intersect: false },
+      plugins: {
+        legend: {
+          position : "bottom",
+          labels   : {
+            color    : labelColor,
+            font     : { size: 10, family: "'Plus Jakarta Sans', sans-serif" },
+            boxWidth : 12,
+            padding  : 10
+          }
+        },
+        tooltip: {
+          callbacks: {
+            label: ctx => {
+              const val = ctx.parsed.y;
+              if (val === null || val === undefined) return null;
+              return ` ${ctx.dataset.label}: ${val.toFixed(2)} ${yUnit}`;
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          grid  : { color: CHART_COLORS.grid },
+          ticks : {
+            color   : labelColor,
+            font    : { size: 9 },
+            maxRotation: 0 // Horizontal label untuk telefon
+          }
+        },
+        y: {
+          grid  : { color: CHART_COLORS.grid },
+          ticks : {
+            color    : labelColor,
+            font     : { size: 9 },
+            callback : v => v >= 1000 ? (v/1000).toFixed(1)+"k" : v
+          }
+        }
+      }
+    }
+  };
+}
+
+/**
+ * Render stats ringkas di bawah graf (max, min, jumlah).
+ */
+function _renderChartStats(payload) {
+  const container = document.getElementById("chart-stats");
+  const type      = _chartState.type;
+  const tahun     = _chartState.tahun;
+
+  let values = [];
+  let unit   = "";
+
+  if (type === "hasil") {
+    values = payload.hasil.capaiIni.filter(v => v !== null);
+    unit   = "Tan";
+  } else if (type === "pusTuai") {
+    values = payload.pusTuai.hektarBulan.filter(v => v !== null);
+    unit   = "Ha";
+  } else if (type === "muda") {
+    values = payload.muda.total.filter(v => v !== null);
+    unit   = "Tdn";
+  } else if (type === "mengkal") {
+    values = payload.mengkal.total.filter(v => v !== null);
+    unit   = "Tdn";
+  }
+
+  if (!values.length) {
+    container.innerHTML = "";
+    return;
+  }
+
+  const jumlah  = values.reduce((s, v) => s + v, 0);
+  const maxVal  = Math.max(...values);
+  const minVal  = Math.min(...values);
+
+  const stats = [
+    { label: "Jumlah YTD",   val: jumlah.toFixed(2),  unit },
+    { label: "Bulan Terbaik", val: maxVal.toFixed(2), unit },
+    { label: "Bulan Terendah",val: minVal.toFixed(2), unit }
+  ];
+
+  container.innerHTML = stats.map(s => `
+    <div style="background:var(--input-bg);padding:12px 8px;
+                border-radius:12px;text-align:center;
+                border:1px solid var(--border);">
+      <div style="font-size:9px;font-weight:800;color:var(--text-muted);
+                  text-transform:uppercase;margin-bottom:4px;">
+        ${s.label}
+      </div>
+      <div style="font-size:15px;font-weight:900;color:var(--primary);">
+        ${s.val}
+      </div>
+      <div style="font-size:9px;color:var(--text-muted);font-weight:700;">
+        ${s.unit}
+      </div>
+    </div>
+  `).join("");
+}
+
+// ============================================================================
+// RENDER HELPERS — DROPDOWN & TABS
+// ============================================================================
+
+function _renderChartPktDropdown() {
+  const sel = document.getElementById("chart-pkt");
+  sel.innerHTML = CHART_PKT_LIST
+    .map(p => `<option value="${p}">${p}</option>`)
+    .join("");
+  sel.value = _chartState.pkt;
+}
+
+function _renderChartTahunDropdown() {
+  const sel      = document.getElementById("chart-tahun");
+  const tahunIni = new Date().getFullYear();
+  sel.innerHTML  = [tahunIni, tahunIni - 1, tahunIni - 2]
+    .map(y => `<option value="${y}">${y}</option>`)
+    .join("");
+  sel.value = _chartState.tahun;
+}
+
+function _renderChartTabs() {
+  const container = document.getElementById("chart-tabs");
+  container.innerHTML = CHART_TYPES.map(t => `
+    <button onclick="onChartTabChange('${t.key}')"
+            id="tab-${t.key}"
+            style="flex-shrink:0;width:auto;padding:8px 14px;
+                   font-size:11px;border-radius:20px;
+                   background:${_chartState.type === t.key ? 'var(--primary)' : 'var(--input-bg)'};
+                   color:${_chartState.type === t.key ? '#fff' : 'var(--text-muted)'};
+                   border:1px solid ${_chartState.type === t.key ? 'var(--primary)' : 'var(--border)'};
+                   font-weight:900;">
+      ${t.label}
+    </button>
+  `).join("");
+}
+
+function onChartTabChange(type) {
+  _chartState.type = type;
+  _renderChartTabs();
+  if (_chartDataCache) {
+    _renderChart(_chartDataCache);
+    _renderChartStats(_chartDataCache);
+  }
+}
+
+function _showChartLoader(show) {
+  const loader = document.getElementById("chart-loader");
+  if (loader) loader.style.display = show ? "flex" : "none";
+}
+
+function _showChartError(msg) {
+  const canvas = document.getElementById("mainChart");
+  if (_chartInstance) { _chartInstance.destroy(); _chartInstance = null; }
+  const ctx = canvas.getContext("2d");
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  document.getElementById("chart-stats").innerHTML = `
+    <div style="grid-column:span 3;text-align:center;
+                padding:20px;color:var(--danger);font-weight:800;">
+      ${msg}
+    </div>`;
+}
