@@ -40,25 +40,20 @@ let HARVEST_STATS = null;
 // 2. INISIALISASI
 // ============================================================================
 
-window.onload = () => {
-  // Set semua input tarikh ke hari ini
+window.onload = async () => {
   const today = new Date().toISOString().split("T")[0];
-  ["date-hasil", "date-muda", "date-penalti", "date-tandan"]
+  ["date-hasil","date-muda","date-penalti","date-tandan"]
     .forEach(id => {
       const el = document.getElementById(id);
       if (el) el.value = today;
     });
-
-  // Render semua halaman input
   renderPeringkatHasil();
   renderTeamMuda();
   renderTeamTandan();
   renderPeringkatPenalti();
-
-  // Ambil data dari backend
   fetchHarvestStats();
-  loadDashboardData();
-  initChartPage();
+  await loadDashboardData(); // tunggu dashboard selesai dulu
+  initChartPage();           // baru mula chart
 };
 
 
@@ -299,10 +294,11 @@ async function loadDashboardData() {
 
     if (!res.ok || !res.payload) {
       container.innerHTML = `
-        <div style="text-align:center;padding:20px;color:var(--danger);font-weight:800;">
+        <div style="text-align:center;padding:20px;
+                    color:var(--danger);font-weight:800;">
           Gagal memuatkan data. Sila cuba lagi.
         </div>`;
-      return;
+      return; // ← return tanpa value pun ok, async function auto return resolved promise
     }
 
     let html = "";
@@ -314,7 +310,6 @@ async function loadDashboardData() {
         Tiada rekod untuk bulan ini.
       </div>`;
 
-    // Animasi progress bar dari 0 ke nilai sebenar
     setTimeout(() => {
       document.querySelectorAll(".pb-fill").forEach(el => {
         const w = el.style.width;
@@ -325,7 +320,8 @@ async function loadDashboardData() {
 
   } catch (e) {
     document.getElementById("dash-container").innerHTML = `
-      <div style="text-align:center;padding:20px;color:var(--danger);font-weight:800;">
+      <div style="text-align:center;padding:20px;
+                  color:var(--danger);font-weight:800;">
         Tiada sambungan ke server.
       </div>`;
   }
@@ -1324,11 +1320,12 @@ function _showChartLoader(show) {
 }
 
 function _showChartError(msg) {
+  _showChartLoader(false); // ← pastikan loader sentiasa tersembunyi
   const canvas = document.getElementById("mainChart");
+  if (!canvas) return;
   if (_chartInstance) { _chartInstance.destroy(); _chartInstance = null; }
   const ctx = canvas.getContext("2d");
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-
   document.getElementById("chart-stats").innerHTML = `
     <div style="grid-column:span 3;text-align:center;
                 padding:20px;color:var(--danger);font-weight:800;">
