@@ -1355,6 +1355,8 @@ function _renderChartTabs() {
       ${t.label}
     </button>
   `).join("");
+  const compareRow = document.getElementById("chart-compare").closest("div");
+  compareRow.style.display = _chartState.type === "hasil" ? "flex" : "none";
 }
 
 function onChartTabChange(type) {
