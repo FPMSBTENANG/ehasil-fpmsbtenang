@@ -11,7 +11,7 @@
  * ============================================================================
  */
 
-const CACHE_VERSION = "ehasil-v3.2";
+const CACHE_VERSION = "ehasil-v3.3";
 
 const ASSETS = [
   "./",
