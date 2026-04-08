@@ -625,11 +625,13 @@ function drawStatsUI(mode, pkt, data) {
     const cfg      = mode === "MUDA" ? MUDA_CFG : TANDAN_CFG;
 
     if (data.totalPkt !== undefined) {
-      let txt = `TOTAL PKT: ${data.totalPkt}`;
-      if (mode === "TANDAN" && data.berat) {
-        const estTon = (data.totalPkt * data.berat / 1000).toFixed(2);
-        txt += ` | BERAT: ${estTon} MT`;
-      }
+  let txt = `TOTAL PKT: ${data.totalPkt}`;
+  if (mode === "TANDAN" && data.abw) {
+    txt += ` | ABW: ${data.abw}`;
+  }
+  header.textContent   = txt;
+  header.style.display = "block";
+}
       header.textContent    = txt;
       header.style.display  = "block";
     } else {
