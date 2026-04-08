@@ -1279,10 +1279,10 @@ function _renderChartStats(payload) {
     const compare = _chartState.compare;
 
     const cards = [
-      { label:"BI BULAN INI",   sub:s.bulanSemasa,      val:s.bi.toFixed(2),       val2:s.bi_lps.toFixed(2)       },
-      { label:"HBI YTD",        sub:`Jan → ${s.bulanSemasa}`, val:s.hbi.toFixed(2), val2:s.hbi_lps.toFixed(2)     },
-      { label:"TARGET TAHUNAN", sub:"Tan/Hek",           val:s.targetTH.toFixed(2), val2:s.targetTH_lps.toFixed(2) }
-    ];
+  { label:"CAPAI BULAN INI", sub:s.bulanSemasa, ... },
+  { label:"CAPAI HINGGA KINI", sub:`Jan → ${s.bulanSemasa}`, ... },
+  { label:"TARGET TAHUNAN", sub:"Tan/Hek", ... }
+];
 
     container.innerHTML = cards.map(c => {
       if (compare && s.adaData) {
