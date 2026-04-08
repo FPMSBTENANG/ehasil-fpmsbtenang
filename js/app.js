@@ -47,13 +47,38 @@ window.onload = async () => {
       const el = document.getElementById(id);
       if (el) el.value = today;
     });
+
   renderPeringkatHasil();
   renderTeamMuda();
   renderTeamTandan();
   renderPeringkatPenalti();
-  fetchHarvestStats();
-  await loadDashboardData(); // tunggu dashboard selesai dulu
-  initChartPage();           // baru mula chart
+  fetchHarvestStats(); // parallel — tak perlu await
+
+  // SATU API call untuk dashboard + chart
+  _showChartLoader(true);
+  try {
+    const res = await apiCall("getPageData", { pkt: "RUMUSAN" });
+
+    if (res.ok && res.payload) {
+      // Render dashboard
+      _renderDashboardData(res.payload);
+
+      // Cache chart — tab switching terus guna cache, tiada fetch lagi
+      _chartDataCache = res.payload.chart;
+      initChartPage(true); // skip fetch, guna cache
+
+    } else {
+      // Fallback jika gagal
+      await loadDashboardData();
+      initChartPage();
+    }
+
+  } catch(e) {
+    await loadDashboardData();
+    initChartPage();
+  } finally {
+    _showChartLoader(false);
+  }
 };
 
 
@@ -327,6 +352,26 @@ async function loadDashboardData() {
   }
 }
 
+// Render dashboard dari data yang dah ada (tanpa API call)
+function _renderDashboardData(payload) {
+  const container = document.getElementById("dash-container");
+  if (!payload.rumusan && !payload.cards?.length) {
+    container.innerHTML = `<div style="text-align:center;padding:20px;">
+      Tiada rekod untuk bulan ini.</div>`;
+    return;
+  }
+  let html = "";
+  if (payload.rumusan) html += buildCardHTML(payload.rumusan, true);
+  payload.cards?.forEach(c => { html += buildCardHTML(c, false); });
+  container.innerHTML = html;
+  setTimeout(() => {
+    document.querySelectorAll(".pb-fill").forEach(el => {
+      const w = el.style.width;
+      el.style.width = "0";
+      setTimeout(() => { el.style.width = w; }, 50);
+    });
+  }, 50);
+}
 
 // ============================================================================
 // 7. INPUT HANDLER (FORMULA SUPPORT)
@@ -956,11 +1001,18 @@ let _chartState = {
  * Inisialisasi halaman graf — render dropdown + tabs.
  * Dipanggil sekali semasa nav ke page-grafik.
  */
-function initChartPage() {
+function initChartPage(skipFetch = false) {
   _renderChartPktDropdown();
   _renderChartTahunDropdown();
   _renderChartTabs();
-  loadChartData();
+  if (skipFetch && _chartDataCache) {
+    // Data dah ada — render terus tanpa fetch
+    _renderChart(_chartDataCache);
+    _renderChartStats(_chartDataCache);
+    _showChartLoader(false);
+  } else {
+    loadChartData();
+  }
 }
 
 /**
