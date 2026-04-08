@@ -15,7 +15,7 @@
 // 1. API ENDPOINT
 // ============================================================================
 
-const API_URL = "https://script.google.com/macros/s/AKfycbxj0Cb_yLy9wHTbFzZrn8s5vFJcZFq_7gmNB95ouJykB6dWbyzIuQeYfngqGCok4c42Kw/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbxaMACbMLjckH7NuPpTEYOY29t94f9otg1r2NzxVeYoe_YVljjEKJicS7RCKh0pqjuprA/exec";
 
 
 // ============================================================================
