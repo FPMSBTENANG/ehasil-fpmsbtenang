@@ -181,21 +181,30 @@
         </div>
 
         <!-- Toggle perbandingan tahun lepas -->
-        <div style="display:flex;align-items:center;gap:10px;
-                    margin-bottom:14px;padding:10px 14px;
-                    background:var(--input-bg);border-radius:12px;
-                    border:1px solid var(--border);">
-          <input type="checkbox" id="chart-compare"
-                 onchange="onChartFilterChange()"
-                 style="width:18px;height:18px;
-                        accent-color:var(--primary);padding:0;">
-          <label for="chart-compare"
-                 style="margin:0;font-size:12px;font-weight:700;
-                        text-transform:none;color:var(--text-main);
-                        cursor:pointer;">
-            Bandingkan dengan tahun lepas
-          </label>
-        </div>
+<div id="compare-row"
+     onclick="document.getElementById('chart-compare').click()"
+     style="display:flex;align-items:center;justify-content:space-between;
+            margin-bottom:14px;padding:10px 14px;
+            background:var(--input-bg);border-radius:12px;
+            border:1px solid var(--border);cursor:pointer;">
+  <span style="font-size:12px;font-weight:700;color:var(--text-main);">
+    Bandingkan dengan tahun lepas
+  </span>
+  <div id="compare-toggle"
+       style="width:42px;height:24px;border-radius:12px;
+              background:var(--border);position:relative;
+              transition:background 0.25s;flex-shrink:0;pointer-events:none;">
+    <div id="compare-knob"
+         style="width:18px;height:18px;border-radius:50%;background:#fff;
+                position:absolute;top:3px;left:3px;
+                transition:transform 0.25s;
+                box-shadow:0 1px 4px rgba(0,0,0,0.25);">
+    </div>
+  </div>
+  <input type="checkbox" id="chart-compare"
+         onchange="onChartFilterChange();_syncToggleUI();"
+         style="display:none;">
+</div>
 
         <!-- Canvas chart -->
         <div style="position:relative;height:280px;">
