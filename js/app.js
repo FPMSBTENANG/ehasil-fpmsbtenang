@@ -625,20 +625,16 @@ function drawStatsUI(mode, pkt, data) {
     const cfg      = mode === "MUDA" ? MUDA_CFG : TANDAN_CFG;
 
     if (data.totalPkt !== undefined) {
-  let txt = `TOTAL PKT: ${data.totalPkt}`;
-  if (mode === "TANDAN" && data.abw) {
-    txt += ` | ABW: ${data.abw}`;
-  }
-  header.textContent   = txt;
-  header.style.display = "block";
-}
-      header.textContent    = txt;
-      header.style.display  = "block";
+      let txt = `TOTAL PKT: ${data.totalPkt}`;
+      if (mode === "TANDAN" && data.abw) {
+        txt += ` | ABW: ${data.abw}`;
+      }
+      header.textContent   = txt;
+      header.style.display = "block";
     } else {
       header.style.display = "none";
     }
 
-    // Kemaskini badge di setiap label team
     (cfg[pkt] || []).forEach(t => {
       const labelEl = document.getElementById(`lbl-${mode.toLowerCase()}-${t}`);
       if (!labelEl) return;
