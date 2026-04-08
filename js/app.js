@@ -1210,6 +1210,16 @@ function _baseChartConfig(labels, datasets, yUnit) {
   };
 }
 
+function _syncToggleUI() {
+  const checked = document.getElementById("chart-compare").checked;
+  const toggle  = document.getElementById("compare-toggle");
+  const knob    = document.getElementById("compare-knob");
+  if (!toggle || !knob) return;
+  toggle.style.background = checked ? "var(--primary)" : "var(--border)";
+  knob.style.transform    = checked ? "translateX(18px)" : "translateX(0)";
+}
+
+
 /**
  * Render stats ringkas di bawah graf (max, min, jumlah).
  */
@@ -1217,107 +1227,107 @@ function _renderChartStats(payload) {
   const container = document.getElementById("chart-stats");
   const type      = _chartState.type;
 
-  // ── PUSINGAN TUAI — stat khas ──────────────────────────────────────
+  // Pusingan — 3 kotak khas
   if (type === "pusTuai") {
     const d = payload.pusTuai;
     container.innerHTML = `
-      <div style="background:var(--input-bg);padding:12px 8px;
-                  border-radius:12px;text-align:center;
-                  border:1px solid var(--border);">
+      <div style="background:var(--input-bg);padding:12px 8px;border-radius:12px;
+                  text-align:center;border:1px solid var(--border);">
         <div style="font-size:9px;font-weight:800;color:var(--text-muted);
-                    text-transform:uppercase;margin-bottom:4px;">
-          HEKTAR DITUAI
-        </div>
+                    text-transform:uppercase;margin-bottom:4px;">HEKTAR DITUAI</div>
         <div style="font-size:15px;font-weight:900;color:var(--primary);">
           ${d.totalYTD.toFixed(2)}
         </div>
-        <div style="font-size:9px;color:var(--text-muted);
-                    font-weight:700;margin-top:3px;">
+        <div style="font-size:9px;color:var(--text-muted);font-weight:700;margin-top:3px;">
           Baki: ${d.baki.toFixed(2)} Ha
         </div>
       </div>
-
-      <div style="background:var(--input-bg);padding:12px 8px;
-                  border-radius:12px;text-align:center;
-                  border:1px solid var(--border);">
+      <div style="background:var(--input-bg);padding:12px 8px;border-radius:12px;
+                  text-align:center;border:1px solid var(--border);">
         <div style="font-size:9px;font-weight:800;color:var(--text-muted);
-                    text-transform:uppercase;margin-bottom:4px;">
-          PUS B.I
-        </div>
+                    text-transform:uppercase;margin-bottom:4px;">PUS B.I</div>
         <div style="font-size:15px;font-weight:900;color:var(--primary);">
           ${d.bi.toFixed(2)}
         </div>
-        <div style="font-size:9px;color:var(--text-muted);
-                    font-weight:700;margin-top:3px;">
+        <div style="font-size:9px;color:var(--text-muted);font-weight:700;margin-top:3px;">
           Bulan Terkini
         </div>
       </div>
-
-      <div style="background:var(--input-bg);padding:12px 8px;
-                  border-radius:12px;text-align:center;
-                  border:1px solid var(--border);">
+      <div style="background:var(--input-bg);padding:12px 8px;border-radius:12px;
+                  text-align:center;border:1px solid var(--border);">
         <div style="font-size:9px;font-weight:800;color:var(--text-muted);
-                    text-transform:uppercase;margin-bottom:4px;">
-          PUS H.B.I
-        </div>
+                    text-transform:uppercase;margin-bottom:4px;">PUS H.B.I</div>
         <div style="font-size:15px;font-weight:900;color:var(--primary);">
           ${d.hbi.toFixed(2)}
         </div>
-        <div style="font-size:9px;color:var(--text-muted);
-                    font-weight:700;margin-top:3px;">
+        <div style="font-size:9px;color:var(--text-muted);font-weight:700;margin-top:3px;">
           YTD
         </div>
-      </div>
-    `;
+      </div>`;
     return;
   }
 
-  // ── JENIS LAIN — stat standard ─────────────────────────────────────
-  let values = [];
-  let unit   = "";
-
-  if (type === "hasil") {
-    values = payload.hasil.capaiIni.filter(v => v !== null);
-    unit   = "Tan";
-  } else if (type === "muda") {
-    values = payload.muda.total.filter(v => v !== null);
-    unit   = "Tdn";
-  } else if (type === "mengkal") {
-    values = payload.mengkal.total.filter(v => v !== null);
-    unit   = "Tdn";
-  }
-
-  if (!values.length) {
+  // Muda / Mengkal — tiada cards
+  if (type === "muda" || type === "mengkal") {
     container.innerHTML = "";
     return;
   }
 
-  const jumlah = values.reduce((s, v) => s + v, 0);
-  const maxVal = Math.max(...values);
-  const minVal = Math.min(...values);
+  // Hasil — 3 cards dinamik
+  if (type === "hasil") {
+    const s       = payload.hasil.stats;
+    const compare = _chartState.compare;
 
-  const stats = [
-    { label: "Jumlah YTD",    val: jumlah.toFixed(2), unit },
-    { label: "Bulan Terbaik", val: maxVal.toFixed(2), unit },
-    { label: "Bulan Terendah",val: minVal.toFixed(2), unit }
-  ];
+    const cards = [
+      { label:"BI BULAN INI",   sub:s.bulanSemasa,      val:s.bi.toFixed(2),       val2:s.bi_lps.toFixed(2)       },
+      { label:"HBI YTD",        sub:`Jan → ${s.bulanSemasa}`, val:s.hbi.toFixed(2), val2:s.hbi_lps.toFixed(2)     },
+      { label:"TARGET TAHUNAN", sub:"Tan/Hek",           val:s.targetTH.toFixed(2), val2:s.targetTH_lps.toFixed(2) }
+    ];
 
-  container.innerHTML = stats.map(s => `
-    <div style="background:var(--input-bg);padding:12px 8px;
-                border-radius:12px;text-align:center;
-                border:1px solid var(--border);">
-      <div style="font-size:9px;font-weight:800;color:var(--text-muted);
-                  text-transform:uppercase;margin-bottom:4px;">
-        ${s.label}
-      </div>
-      <div style="font-size:15px;font-weight:900;color:var(--primary);">
-        ${s.val}
-      </div>
-      <div style="font-size:9px;color:var(--text-muted);font-weight:700;">
-        ${s.unit}
-      </div>
-    </div>
-  `).join("");
+    container.innerHTML = cards.map(c => {
+      if (compare && s.adaData) {
+        return `
+          <div style="background:var(--input-bg);padding:10px 6px;border-radius:12px;
+                      text-align:center;border:1px solid var(--border);">
+            <div style="font-size:8px;font-weight:800;color:var(--text-muted);
+                        text-transform:uppercase;margin-bottom:5px;line-height:1.3;">
+              ${c.label}
+            </div>
+            <div style="font-size:14px;font-weight:900;color:var(--primary);line-height:1.2;">
+              ${c.val}
+            </div>
+            <div style="font-size:9px;font-weight:700;color:var(--text-muted);margin:1px 0 4px;">
+              ${s.tahun}
+            </div>
+            <div style="height:1px;background:var(--border);margin:4px 0;"></div>
+            <div style="font-size:13px;font-weight:800;color:var(--text-muted);line-height:1.2;">
+              ${c.val2}
+            </div>
+            <div style="font-size:9px;font-weight:700;color:var(--text-muted);margin-top:1px;">
+              ${s.tahunLps}
+            </div>
+          </div>`;
+      } else {
+        return `
+          <div style="background:var(--input-bg);padding:12px 8px;border-radius:12px;
+                      text-align:center;border:1px solid var(--border);">
+            <div style="font-size:9px;font-weight:800;color:var(--text-muted);
+                        text-transform:uppercase;margin-bottom:4px;">
+              ${c.label}
+            </div>
+            <div style="font-size:15px;font-weight:900;color:var(--primary);">
+              ${c.val}
+            </div>
+            <div style="font-size:9px;color:var(--text-muted);font-weight:700;margin-top:2px;">
+              ${c.sub}
+            </div>
+          </div>`;
+      }
+    }).join("");
+    return;
+  }
+
+  container.innerHTML = "";
 }
 
 // ============================================================================
@@ -1355,8 +1365,15 @@ function _renderChartTabs() {
       ${t.label}
     </button>
   `).join("");
-  const compareRow = document.getElementById("chart-compare").closest("div");
-  compareRow.style.display = _chartState.type === "hasil" ? "flex" : "none";
+
+  // Papar toggle HANYA untuk tab Hasil
+  const compareRow = document.getElementById("compare-row");
+  if (compareRow) {
+    compareRow.style.display = _chartState.type === "hasil" ? "flex" : "none";
+  }
+
+  // Sync visual toggle dengan state checkbox semasa
+  _syncToggleUI();
 }
 
 function onChartTabChange(type) {
