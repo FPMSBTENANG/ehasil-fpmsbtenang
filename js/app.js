@@ -323,6 +323,34 @@ window.onload = async () => {
 
 async function initializeApp() {
 
+  // ============================================================
+  // PAPAR MAKLUMAT PENGGUNA YANG SEDANG LOGIN
+  // ============================================================
+
+  if (CURRENT_USER) {
+
+    const nameEl =
+      document.getElementById("current-user-name");
+
+    const roleEl =
+      document.getElementById("current-user-role");
+
+    if (nameEl) {
+      nameEl.textContent =
+        CURRENT_USER.nama || CURRENT_USER.userId || "-";
+    }
+
+    if (roleEl) {
+      roleEl.textContent =
+        CURRENT_USER.role || "USER";
+    }
+  }
+
+
+  // ============================================================
+  // INITIALIZE SISTEM
+  // ============================================================
+
   const today = new Date().toISOString().split("T")[0];
 
   [
