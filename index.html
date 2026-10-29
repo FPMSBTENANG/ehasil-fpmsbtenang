@@ -437,6 +437,119 @@
     }
 
   </style>
+
+
+  <!-- ================================================================
+       TABLET LANDSCAPE GUARD
+       ================================================================ -->
+  <style>
+    #tablet-orientation-guard {
+      position: fixed;
+      inset: 0;
+      z-index: 99990;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 30px;
+      background:
+        radial-gradient(
+          700px 500px at 20% 10%,
+          rgba(67,97,238,0.35),
+          transparent 60%
+        ),
+        radial-gradient(
+          700px 500px at 90% 90%,
+          rgba(58,12,163,0.35),
+          transparent 60%
+        ),
+        #0b1220;
+      color: #fff;
+      text-align: center;
+    }
+
+    #tablet-orientation-guard.show {
+      display: flex !important;
+    }
+
+    .orientation-card {
+      width: 100%;
+      max-width: 430px;
+      padding: 35px 25px;
+      border-radius: 28px;
+      background:
+        linear-gradient(
+          180deg,
+          rgba(255,255,255,0.10),
+          rgba(255,255,255,0.04)
+        );
+      border: 1px solid rgba(255,255,255,0.14);
+      box-shadow: 0 30px 80px rgba(0,0,0,0.45);
+      backdrop-filter: blur(20px);
+    }
+
+    .orientation-icon {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 22px;
+      background:
+        linear-gradient(
+          135deg,
+          #4361ee,
+          #3a0ca3
+        );
+      box-shadow: 0 15px 35px rgba(67,97,238,0.30);
+      animation: orientationRotate 2s ease-in-out infinite;
+    }
+
+    .orientation-icon i {
+      font-size: 42px;
+    }
+
+    .orientation-title {
+      font-size: 21px;
+      font-weight: 900;
+      margin-bottom: 8px;
+    }
+
+    .orientation-text {
+      font-size: 13px;
+      line-height: 1.6;
+      color: rgba(255,255,255,0.65);
+      font-weight: 600;
+    }
+
+    .orientation-button {
+      width: 100%;
+      margin-top: 22px;
+      padding: 14px;
+      border: 0;
+      border-radius: 14px;
+      background:
+        linear-gradient(
+          135deg,
+          #4361ee,
+          #3a0ca3
+        );
+      color: #fff;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    @keyframes orientationRotate {
+      0%   { transform: rotate(0deg); }
+      25%  { transform: rotate(90deg); }
+      50%  { transform: rotate(90deg); }
+      75%  { transform: rotate(0deg); }
+      100% { transform: rotate(0deg); }
+    }
+  </style>
+
 </head>
 
 
@@ -551,6 +664,43 @@
 
     </div>
 
+  </div>
+
+
+
+
+  <!-- ================================================================
+       TABLET ORIENTATION SCREEN
+       ================================================================ -->
+  <div id="tablet-orientation-guard">
+    <div class="orientation-card">
+      <div class="orientation-icon">
+        <i class="material-icons-round">screen_rotation</i>
+      </div>
+
+      <div class="orientation-title">
+        Pusingkan Tablet
+      </div>
+
+      <div class="orientation-text">
+        e-HASIL FPMSB TENANG dioptimumkan untuk paparan
+        <b>LANDSCAPE</b> pada tablet.
+        <br><br>
+        Sila pusingkan tablet secara melintang.
+      </div>
+
+      <button
+        type="button"
+        class="orientation-button"
+        onclick="requestLandscape()">
+        <i
+          class="material-icons-round"
+          style="font-size:18px;vertical-align:middle;margin-right:5px;">
+          screen_lock_rotation
+        </i>
+        GUNA LANDSCAPE
+      </button>
+    </div>
   </div>
 
 
@@ -1989,10 +2139,146 @@
        JAVASCRIPT
        ================================================================ -->
 
+
+
+  <!-- ================================================================
+       TABLET LANDSCAPE CONTROL
+       ================================================================ -->
+  <script>
+    (function () {
+
+      const guard =
+        document.getElementById("tablet-orientation-guard");
+
+      const loginScreen =
+        document.getElementById("login-screen");
+
+      function isTabletDevice() {
+
+        const ua =
+          navigator.userAgent ||
+          navigator.vendor ||
+          window.opera ||
+          "";
+
+        const isAndroid = /Android/i.test(ua);
+
+        const isIPad =
+          /iPad/i.test(ua) ||
+          (
+            /Macintosh/i.test(ua) &&
+            navigator.maxTouchPoints &&
+            navigator.maxTouchPoints > 1
+          );
+
+        const minDimension =
+          Math.min(
+            window.screen.width,
+            window.screen.height
+          );
+
+        return (
+          (isAndroid || isIPad) &&
+          minDimension >= 600
+        );
+      }
+
+      function isPortrait() {
+        return window.innerHeight > window.innerWidth;
+      }
+
+      async function requestLandscape() {
+
+        try {
+
+          if (
+            screen.orientation &&
+            screen.orientation.lock
+          ) {
+            await screen.orientation.lock("landscape");
+          }
+
+        } catch (error) {
+          // Sesetengah browser hanya benarkan orientation lock
+          // dalam PWA/fullscreen. Guard akan kekal sebagai fallback.
+        }
+
+        setTimeout(updateOrientationGuard, 300);
+      }
+
+      function updateOrientationGuard() {
+
+        if (!guard) return;
+
+        if (!isTabletDevice()) {
+          guard.classList.remove("show");
+          return;
+        }
+
+        // Jangan ganggu skrin login.
+        if (
+          loginScreen &&
+          !loginScreen.classList.contains("login-hidden")
+        ) {
+          guard.classList.remove("show");
+          return;
+        }
+
+        if (isPortrait()) {
+          guard.classList.add("show");
+        } else {
+          guard.classList.remove("show");
+        }
+      }
+
+      window.addEventListener(
+        "resize",
+        updateOrientationGuard
+      );
+
+      window.addEventListener(
+        "orientationchange",
+        function () {
+          setTimeout(updateOrientationGuard, 250);
+        }
+      );
+
+      if (screen.orientation) {
+        screen.orientation.addEventListener(
+          "change",
+          function () {
+            setTimeout(updateOrientationGuard, 250);
+          }
+        );
+      }
+
+      if (loginScreen) {
+
+        const observer =
+          new MutationObserver(function () {
+            setTimeout(updateOrientationGuard, 200);
+          });
+
+        observer.observe(
+          loginScreen,
+          {
+            attributes: true,
+            attributeFilter: ["class"]
+          }
+        );
+      }
+
+      window.requestLandscape = requestLandscape;
+
+      setTimeout(updateOrientationGuard, 500);
+
+    })();
+  </script>
+
+
   <script src="js/config.js"></script>
   <script src="js/app.js"></script>
 
 
 </body>
 </html>
-```
