@@ -44,6 +44,105 @@ const AUTH_KEY = "ehasil_user";
 let CURRENT_USER = null;
 
 // ============================================================================
+// AUTHENTICATION FUNCTIONS
+// ============================================================================
+
+async function loginUser(userId, password) {
+
+  userId = String(userId || "").trim();
+  password = String(password || "");
+
+  if (!userId || !password) {
+    return {
+      ok: false,
+      message: "Sila masukkan User ID dan Password."
+    };
+  }
+
+  try {
+
+    const result = await apiCall("login", {
+      userId: userId,
+      password: password
+    });
+
+    if (result.ok && result.user) {
+
+      CURRENT_USER = result.user;
+
+      localStorage.setItem(
+        AUTH_KEY,
+        JSON.stringify(result.user)
+      );
+
+      return {
+        ok: true,
+        user: result.user
+      };
+    }
+
+    return {
+      ok: false,
+      message: result.message || "Login gagal."
+    };
+
+  } catch (error) {
+
+    console.error("LOGIN ERROR:", error);
+
+    return {
+      ok: false,
+      message: "Tidak dapat berhubung dengan server."
+    };
+  }
+}
+
+
+// ============================================================================
+// RESTORE LOGIN
+// ============================================================================
+
+function restoreLogin() {
+
+  try {
+
+    const saved = localStorage.getItem(AUTH_KEY);
+
+    if (!saved) {
+      CURRENT_USER = null;
+      return null;
+    }
+
+    CURRENT_USER = JSON.parse(saved);
+
+    return CURRENT_USER;
+
+  } catch (error) {
+
+    console.error("RESTORE LOGIN ERROR:", error);
+
+    localStorage.removeItem(AUTH_KEY);
+    CURRENT_USER = null;
+
+    return null;
+  }
+}
+
+
+// ============================================================================
+// LOGOUT
+// ============================================================================
+
+function logoutUser() {
+
+  localStorage.removeItem(AUTH_KEY);
+
+  CURRENT_USER = null;
+
+  location.reload();
+}
+
+// ============================================================================
 // 2. INISIALISASI
 // ============================================================================
 
