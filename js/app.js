@@ -146,45 +146,103 @@ function logoutUser() {
 // 2. INISIALISASI
 // ============================================================================
 
+// ============================================================================
+// 2. INISIALISASI
+// ============================================================================
+
 window.onload = async () => {
+
+  // Semak sama ada pengguna sudah login
+  const savedUser = restoreLogin();
+
+  // Jika belum login, jangan initialize sistem
+  if (!savedUser) {
+    return;
+  }
+
+  // Jika sudah login, terus initialize e-Hasil
+  await initializeApp();
+};
+
+
+// ============================================================================
+// INITIALIZE SISTEM e-HASIL
+// ============================================================================
+
+async function initializeApp() {
+
   const today = new Date().toISOString().split("T")[0];
-  ["date-hasil","date-muda","date-penalti","date-tandan"]
-    .forEach(id => {
-      const el = document.getElementById(id);
-      if (el) el.value = today;
-    });
+
+  [
+    "date-hasil",
+    "date-muda",
+    "date-penalti",
+    "date-tandan"
+  ].forEach(id => {
+
+    const el = document.getElementById(id);
+
+    if (el) {
+      el.value = today;
+    }
+
+  });
+
 
   renderPeringkatHasil();
   renderTeamMuda();
   renderTeamTandan();
   renderPeringkatPenalti();
+
   fetchHarvestStats(); // parallel — tak perlu await
+
 
   // SATU API call untuk dashboard + chart
   _showChartLoader(true);
+
   try {
-    const res = await apiCall("getPageData", { pkt: "RUMUSAN" });
+
+    const res = await apiCall(
+      "getPageData",
+      { pkt: "RUMUSAN" }
+    );
+
 
     if (res.ok && res.payload) {
+
       // Render dashboard
       _renderDashboardData(res.payload);
 
-      // Cache chart — tab switching terus guna cache, tiada fetch lagi
+
+      // Cache chart — tab switching terus guna cache
       _chartDataCache = res.payload.chart;
-      initChartPage(true); // skip fetch, guna cache
+
+      initChartPage(true);
+
 
     } else {
+
       // Fallback jika gagal
       await loadDashboardData();
+
       initChartPage();
+
     }
 
-  } catch(e) {
+
+  } catch (e) {
+
     await loadDashboardData();
+
     initChartPage();
+
+
   } finally {
+
     _showChartLoader(false);
+
   }
+
 };
 
 
