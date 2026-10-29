@@ -143,8 +143,154 @@ function logoutUser() {
 }
 
 // ============================================================================
-// 2. INISIALISASI
+// LOGIN UI
 // ============================================================================
+
+async function handleLogin() {
+
+  const userInput = document.getElementById("login-user");
+  const passwordInput = document.getElementById("login-password");
+  const loginButton = document.getElementById("login-button");
+  const message = document.getElementById("login-message");
+
+  const userId = userInput
+    ? userInput.value.trim()
+    : "";
+
+  const password = passwordInput
+    ? passwordInput.value
+    : "";
+
+  // Reset mesej
+  if (message) {
+    message.textContent = "";
+    message.className = "login-message";
+  }
+
+  if (!userId || !password) {
+
+    if (message) {
+      message.textContent =
+        "Sila masukkan User ID dan Password.";
+      message.className =
+        "login-message error";
+    }
+
+    return;
+  }
+
+  // Disable button sementara proses login
+  if (loginButton) {
+    loginButton.disabled = true;
+    loginButton.textContent = "LOG MASUK...";
+  }
+
+  try {
+
+    const result = await loginUser(
+      userId,
+      password
+    );
+
+    if (result.ok) {
+
+      // Sembunyikan login screen
+      hideLoginScreen();
+
+      // Initialize sistem
+      await initializeApp();
+
+      return;
+    }
+
+    // Login gagal
+    if (message) {
+      message.textContent =
+        result.message || "Login gagal.";
+      message.className =
+        "login-message error";
+    }
+
+  } catch (error) {
+
+    console.error("HANDLE LOGIN ERROR:", error);
+
+    if (message) {
+      message.textContent =
+        "Ralat berlaku semasa login.";
+      message.className =
+        "login-message error";
+    }
+
+  } finally {
+
+    if (loginButton) {
+      loginButton.disabled = false;
+      loginButton.textContent = "LOG MASUK";
+    }
+
+  }
+}
+
+
+// ============================================================================
+// LOGIN SCREEN
+// ============================================================================
+
+function hideLoginScreen() {
+
+  const screen =
+    document.getElementById("login-screen");
+
+  if (screen) {
+    screen.classList.add("login-hidden");
+  }
+}
+
+
+function showLoginScreen() {
+
+  const screen =
+    document.getElementById("login-screen");
+
+  if (screen) {
+    screen.classList.remove("login-hidden");
+  }
+}
+
+
+// ============================================================================
+// SHOW / HIDE PASSWORD
+// ============================================================================
+
+function toggleLoginPassword() {
+
+  const input =
+    document.getElementById("login-password");
+
+  const icon =
+    document.getElementById("login-password-icon");
+
+  if (!input) return;
+
+  if (input.type === "password") {
+
+    input.type = "text";
+
+    if (icon) {
+      icon.textContent = "visibility_off";
+    }
+
+  } else {
+
+    input.type = "password";
+
+    if (icon) {
+      icon.textContent = "visibility";
+    }
+
+  }
+}
 
 // ============================================================================
 // 2. INISIALISASI
@@ -155,12 +301,18 @@ window.onload = async () => {
   // Semak sama ada pengguna sudah login
   const savedUser = restoreLogin();
 
-  // Jika belum login, jangan initialize sistem
+  // Jika belum login
   if (!savedUser) {
+
+    showLoginScreen();
+
     return;
   }
 
-  // Jika sudah login, terus initialize e-Hasil
+  // Jika sudah login
+  hideLoginScreen();
+
+  // Terus initialize e-Hasil
   await initializeApp();
 };
 
