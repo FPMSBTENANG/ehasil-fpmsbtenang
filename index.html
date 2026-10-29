@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="ms">
 <head>
@@ -22,7 +23,7 @@
   <!-- Chart.js -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 
-  <!-- Tema — apply sebelum render untuk elak flash -->
+  <!-- Tema -->
   <script>
     (function() {
       try {
@@ -35,238 +36,444 @@
   </script>
 
   <!-- ================================================================
-       LOGIN SCREEN — SEMENTARA
-       Design penuh akan kita letak dalam style.css
+       LOGIN STYLE
        ================================================================ -->
   <style>
+
+    /* LOGIN SCREEN */
     #login-screen {
       position: fixed;
       inset: 0;
       z-index: 99999;
+
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 20px;
+
+      padding: 25px;
+
       background:
-        radial-gradient(circle at top left, rgba(67,97,238,.25), transparent 35%),
-        radial-gradient(circle at bottom right, rgba(58,12,163,.22), transparent 35%),
-        var(--bg-body, #f4f7fe);
-      overflow-y: auto;
+        radial-gradient(
+          700px 500px at 20% 10%,
+          rgba(67,97,238,0.35),
+          transparent 60%
+        ),
+        radial-gradient(
+          700px 500px at 90% 90%,
+          rgba(58,12,163,0.35),
+          transparent 60%
+        ),
+        #0b1220;
+    }
+
+    #login-screen.login-hidden {
+      display: none !important;
     }
 
     .login-card {
       width: 100%;
-      max-width: 420px;
-      padding: 35px 30px;
+      max-width: 390px;
+
+      padding: 32px 26px;
+
       border-radius: 28px;
-      background: var(--surface, #ffffff);
-      border: 1px solid var(--border, rgba(15,23,42,.08));
-      box-shadow: 0 25px 70px rgba(15,23,42,.15);
-      text-align: center;
+
+      background:
+        linear-gradient(
+          180deg,
+          rgba(255,255,255,0.10),
+          rgba(255,255,255,0.04)
+        );
+
+      border: 1px solid rgba(255,255,255,0.14);
+
+      box-shadow:
+        0 30px 80px rgba(0,0,0,0.45);
+
+      backdrop-filter: blur(20px);
+
+      color: #fff;
     }
 
     .login-logo-wrap {
-      width: 110px;
-      height: 110px;
-      margin: 0 auto 18px;
-      border-radius: 28px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: rgba(255,255,255,.9);
-      box-shadow: 0 12px 30px rgba(15,23,42,.12);
-      overflow: hidden;
+      text-align: center;
+      margin-bottom: 22px;
     }
 
     .login-logo {
-      width: 90px;
-      height: 90px;
+      width: 95px;
+      height: 95px;
+
       object-fit: contain;
+
+      border-radius: 25px;
+
+      padding: 10px;
+
+      background: rgba(255,255,255,0.10);
+
+      border: 1px solid rgba(255,255,255,0.18);
+
+      box-shadow:
+        0 18px 40px rgba(0,0,0,0.30);
     }
 
-    .login-title h1 {
-      margin: 0;
-      font-size: 30px;
-      font-weight: 900;
-      letter-spacing: -1px;
-      color: var(--text-main, #2b3674);
-    }
+    .login-title {
+      margin: 18px 0 4px;
 
-    .login-title p {
-      margin: 3px 0 0;
-      font-size: 13px;
+      font-size: 23px;
       font-weight: 900;
-      letter-spacing: 2px;
-      color: var(--primary, #4361ee);
+
+      letter-spacing: 0.5px;
+
+      color: #fff;
     }
 
     .login-subtitle {
-      margin: 8px 0 28px;
-      font-size: 10px;
-      font-weight: 800;
-      letter-spacing: 1px;
-      color: var(--text-muted, #a3aed0);
+      margin: 0;
+
+      font-size: 12px;
+      font-weight: 600;
+
+      color: rgba(255,255,255,0.60);
+    }
+
+    .login-form {
+      margin-top: 28px;
     }
 
     .login-field {
-      text-align: left;
+      position: relative;
       margin-bottom: 16px;
     }
 
-    .login-field label {
-      display: block;
-      margin-bottom: 7px;
-      font-size: 10px;
-      font-weight: 900;
-      letter-spacing: .8px;
-      color: var(--text-main, #2b3674);
-    }
+    .login-field > .material-icons-round {
+      position: absolute;
 
-    .login-input-wrap {
-      position: relative;
-      display: flex;
-      align-items: center;
-      min-height: 54px;
-      border-radius: 15px;
-      border: 1px solid var(--border, rgba(15,23,42,.08));
-      background: var(--input-bg, #f8faff);
-      transition: .2s ease;
-    }
+      left: 15px;
+      top: 50%;
 
-    .login-input-wrap:focus-within {
-      border-color: var(--primary, #4361ee);
-      box-shadow: 0 0 0 4px rgba(67,97,238,.12);
-    }
+      transform: translateY(-50%);
 
-    .login-input-wrap > i {
-      margin-left: 16px;
-      color: var(--primary, #4361ee);
+      color: rgba(255,255,255,0.50);
+
       font-size: 21px;
+
+      pointer-events: none;
     }
 
-    .login-input-wrap input {
-      flex: 1;
-      min-width: 0;
-      height: 52px;
-      padding: 0 14px;
-      border: 0;
-      outline: 0;
-      background: transparent;
-      color: var(--text-main, #2b3674);
-      font-family: inherit;
+    .login-input {
+      width: 100%;
+
+      padding: 15px 48px 15px 45px;
+
+      border-radius: 15px;
+
+      border: 1px solid rgba(255,255,255,0.12);
+
+      background: rgba(255,255,255,0.07);
+
+      color: #fff;
+
+      font-family: 'Plus Jakarta Sans', sans-serif;
+
       font-size: 14px;
       font-weight: 700;
+
+      outline: none;
+
+      box-shadow: none;
+
+      appearance: none;
     }
 
-    .login-input-wrap input::placeholder {
-      color: var(--text-muted, #a3aed0);
-      font-weight: 500;
+    .login-input::placeholder {
+      color: rgba(255,255,255,0.40);
     }
 
-    .password-toggle {
-      width: 45px;
-      height: 45px;
-      margin-right: 5px;
+    .login-input:focus {
+      border-color: rgba(99,102,241,0.80);
+
+      background: rgba(255,255,255,0.10);
+
+      box-shadow:
+        0 0 0 4px rgba(67,97,238,0.18);
+    }
+
+    .login-password-toggle {
+      position: absolute;
+
+      right: 10px;
+      top: 50%;
+
+      transform: translateY(-50%);
+
+      width: 38px;
+      height: 38px;
+
+      padding: 0;
+
       border: 0;
+
       background: transparent;
-      color: var(--text-muted, #a3aed0);
-      cursor: pointer;
+
+      color: rgba(255,255,255,0.55);
+
+      box-shadow: none;
+
+      text-transform: none;
+    }
+
+    .login-password-toggle:hover {
+      color: #fff;
+      background: transparent;
+      box-shadow: none;
+    }
+
+    .login-password-toggle::after {
+      display: none;
     }
 
     .login-message {
-      min-height: 20px;
+      min-height: 18px;
+
       margin: 5px 0 12px;
-      font-size: 11px;
-      font-weight: 800;
-      color: var(--danger, #ee5d50);
+
+      text-align: center;
+
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .login-message.error {
+      color: #ff8d85;
+    }
+
+    .login-message.success {
+      color: #48e5b2;
     }
 
     .login-button {
       width: 100%;
-      height: 54px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 9px;
+
+      padding: 15px;
+
       border: 0;
+
       border-radius: 15px;
-      background: var(--primary-grad, linear-gradient(135deg,#4361ee,#3a0ca3));
+
+      background:
+        linear-gradient(
+          135deg,
+          #4361ee,
+          #3a0ca3
+        );
+
       color: #fff;
-      font-family: inherit;
-      font-size: 13px;
+
+      font-family: 'Plus Jakarta Sans', sans-serif;
+
+      font-size: 14px;
       font-weight: 900;
-      letter-spacing: .5px;
+
+      letter-spacing: 0.5px;
+
       cursor: pointer;
-      box-shadow: 0 12px 30px rgba(67,97,238,.25);
-      transition: .2s ease;
+
+      box-shadow:
+        0 14px 30px rgba(67,97,238,0.30);
     }
 
     .login-button:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 15px 35px rgba(67,97,238,.32);
+      box-shadow:
+        0 0 0 4px rgba(67,97,238,0.18),
+        0 16px 35px rgba(67,97,238,0.32);
     }
 
     .login-button:disabled {
-      opacity: .65;
+      opacity: 0.65;
       cursor: wait;
-      transform: none;
     }
 
     .login-footer {
-      margin-top: 25px;
-      color: var(--text-muted, #a3aed0);
-      font-size: 9px;
+      margin-top: 22px;
+
+      text-align: center;
+
+      font-size: 10px;
+
+      font-weight: 600;
+
+      color: rgba(255,255,255,0.35);
+    }
+
+
+    /* ================================================================
+       USER PANEL SIDEBAR
+       ================================================================ */
+
+    .user-panel {
+      margin: 0 14px 15px;
+
+      padding: 14px;
+
+      border-radius: 16px;
+
+      background: rgba(67,97,238,0.08);
+
+      border: 1px solid var(--border);
+    }
+
+    .user-panel-top {
+      display: flex;
+
+      align-items: center;
+
+      gap: 10px;
+
+      margin-bottom: 12px;
+    }
+
+    .user-avatar {
+      width: 38px;
+      height: 38px;
+
+      flex-shrink: 0;
+
+      display: flex;
+
+      align-items: center;
+      justify-content: center;
+
+      border-radius: 12px;
+
+      background:
+        linear-gradient(
+          135deg,
+          #4361ee,
+          #3a0ca3
+        );
+
+      color: #fff;
+    }
+
+    .user-avatar i {
+      font-size: 20px;
+    }
+
+    .user-panel-info {
+      min-width: 0;
+    }
+
+    .user-panel-name {
+      font-size: 13px;
+
+      font-weight: 900;
+
+      color: var(--text-main);
+
+      white-space: nowrap;
+
+      overflow: hidden;
+
+      text-overflow: ellipsis;
+    }
+
+    .user-panel-role {
+      margin-top: 2px;
+
+      font-size: 10px;
+
       font-weight: 800;
-      letter-spacing: .7px;
-      line-height: 1.8;
+
+      color: var(--text-muted);
+
+      text-transform: uppercase;
     }
 
-    .login-footer small {
-      font-size: 8px;
-      font-weight: 700;
+    .logout-button {
+      width: 100%;
+
+      padding: 10px 12px;
+
+      border: 1px solid rgba(238,93,80,0.20);
+
+      border-radius: 11px;
+
+      background: rgba(238,93,80,0.08);
+
+      color: var(--danger);
+
+      font-family: 'Plus Jakarta Sans', sans-serif;
+
+      font-size: 11px;
+
+      font-weight: 900;
+
+      cursor: pointer;
+
+      display: flex;
+
+      align-items: center;
+
+      justify-content: center;
+
+      gap: 7px;
+
+      box-shadow: none;
     }
 
-    /* Bila login sudah berjaya */
-    #login-screen.login-hidden {
-      display: none !important;
+    .logout-button:hover {
+      background: rgba(238,93,80,0.14);
+
+      box-shadow: none;
     }
+
+    .logout-button::after {
+      display: none;
+    }
+
+    .logout-button .material-icons-round {
+      font-size: 17px;
+    }
+
   </style>
-
 </head>
+
 
 <body>
 
-  <!-- ======================================================================
+
+  <!-- ================================================================
        LOGIN SCREEN
-       ====================================================================== -->
+       ================================================================ -->
+
   <div id="login-screen">
 
     <div class="login-card">
 
       <div class="login-logo-wrap">
+
         <img
           class="login-logo"
           src="https://i.imgur.com/APuF5wN.png"
-          alt="Logo FELTEN">
+          alt="Logo FPMSB">
+
+        <div class="login-title">
+          e-HASIL
+        </div>
+
+        <p class="login-subtitle">
+          FPMSB TENANG
+        </p>
+
       </div>
 
-      <div class="login-title">
-        <h1>e-HASIL</h1>
-        <p>FPMSB TENANG</p>
-      </div>
 
-      <div class="login-subtitle">
-        SISTEM PENGURUSAN HASIL LADANG
-      </div>
+      <div class="login-form">
 
-      <!-- USER ID -->
-      <div class="login-field">
-
-        <label for="login-user">
-          USER ID
-        </label>
-
-        <div class="login-input-wrap">
+        <!-- USER ID -->
+        <div class="login-field">
 
           <i class="material-icons-round">
             person
@@ -275,24 +482,18 @@
           <input
             type="text"
             id="login-user"
-            placeholder="Masukkan User ID"
+            class="login-input"
+            placeholder="USER ID"
             autocomplete="username"
-            onkeydown="if(event.key === 'Enter') handleLogin()"
-          >
+            autocapitalize="none"
+            spellcheck="false"
+            onkeydown="if(event.key === 'Enter') handleLogin()">
 
         </div>
 
-      </div>
 
-
-      <!-- PASSWORD -->
-      <div class="login-field">
-
-        <label for="login-password">
-          PASSWORD
-        </label>
-
-        <div class="login-input-wrap">
+        <!-- PASSWORD -->
+        <div class="login-field">
 
           <i class="material-icons-round">
             lock
@@ -301,60 +502,52 @@
           <input
             type="password"
             id="login-password"
-            placeholder="Masukkan Password"
+            class="login-input"
+            placeholder="PASSWORD"
             autocomplete="current-password"
-            onkeydown="if(event.key === 'Enter') handleLogin()"
-          >
+            onkeydown="if(event.key === 'Enter') handleLogin()">
+
 
           <button
             type="button"
-            class="password-toggle"
+            class="login-password-toggle"
             onclick="toggleLoginPassword()"
-            tabindex="-1"
-          >
+            title="Lihat password">
+
             <i
               class="material-icons-round"
-              id="login-password-icon"
-            >
+              id="login-password-icon">
               visibility
             </i>
+
           </button>
 
         </div>
 
+
+        <!-- LOGIN MESSAGE -->
+        <div
+          id="login-message"
+          class="login-message">
+        </div>
+
+
+        <!-- LOGIN BUTTON -->
+        <button
+          id="login-button"
+          class="login-button"
+          type="button"
+          onclick="handleLogin()">
+
+          LOG MASUK
+
+        </button>
+
       </div>
 
 
-      <!-- LOGIN MESSAGE -->
-      <div
-        id="login-message"
-        class="login-message"
-      ></div>
-
-
-      <!-- LOGIN BUTTON -->
-      <button
-        type="button"
-        id="login-button"
-        class="login-button"
-        onclick="handleLogin()"
-      >
-
-        <i class="material-icons-round">
-          login
-        </i>
-
-        <span id="login-button-text">
-          LOG MASUK
-        </span>
-
-      </button>
-
-
-      <!-- FOOTER -->
       <div class="login-footer">
-        <div>e-HASIL FPMSB TENANG</div>
-        <small>FELTEN MAJU WARGA BERMUTU</small>
+        e-HASIL FPMSB TENANG
       </div>
 
     </div>
@@ -362,36 +555,42 @@
   </div>
 
 
-  <!-- ======================================================================
-       LOADER (Full Screen)
-       ====================================================================== -->
+  <!-- ================================================================
+       LOADER
+       ================================================================ -->
+
   <div id="loader">
 
     <div class="spinner"></div>
 
-    <div style="
-      margin-top:20px;
-      font-size:13px;
-      font-weight:900;
-      color:rgba(148,163,184,0.95);
-      letter-spacing:1px;
-    ">
+    <div
+      style="
+        margin-top:20px;
+        font-size:13px;
+        font-weight:900;
+        color:rgba(148,163,184,0.95);
+        letter-spacing:1px;
+      ">
+
       SILA TUNGGU...
+
     </div>
 
   </div>
 
 
-  <!-- ======================================================================
-       TOAST NOTIFIKASI
-       ====================================================================== -->
+  <!-- ================================================================
+       TOAST
+       ================================================================ -->
+
   <div id="toast-box">
 
     <i
       class="material-icons-round"
-      id="toast-icon"
-    >
+      id="toast-icon">
+
       notifications
+
     </i>
 
     <span id="toast-msg">
@@ -401,16 +600,18 @@
   </div>
 
 
-  <!-- ======================================================================
+  <!-- ================================================================
        HEADER
-       ====================================================================== -->
+       ================================================================ -->
+
   <div class="header">
 
     <i
       class="material-icons-round menu-btn"
-      onclick="toggleMenu()"
-    >
+      onclick="toggleMenu()">
+
       menu
+
     </i>
 
     <h3>
@@ -420,31 +621,35 @@
     <div
       class="theme-toggle"
       onclick="toggleTheme()"
-      title="Tukar Tema"
-    >
+      title="Tukar Tema">
+
       <i
         class="material-icons-round"
-        id="themeIcon"
-      >
+        id="themeIcon">
+
         dark_mode
+
       </i>
+
     </div>
 
   </div>
 
 
-  <!-- ======================================================================
+  <!-- ================================================================
        OVERLAY
-       ====================================================================== -->
+       ================================================================ -->
+
   <div
     class="overlay"
-    onclick="toggleMenu()"
-  ></div>
+    onclick="toggleMenu()">
+  </div>
 
 
-  <!-- ======================================================================
+  <!-- ================================================================
        SIDEBAR
-       ====================================================================== -->
+       ================================================================ -->
+
   <div class="sidebar">
 
     <div class="sb-header">
@@ -452,8 +657,7 @@
       <img
         class="sb-logo"
         src="https://i.imgur.com/APuF5wN.png"
-        alt="Logo FPMSB"
-      >
+        alt="Logo FPMSB">
 
       <div class="sb-logo-text">
         SISTEM LADANG
@@ -467,99 +671,169 @@
       <div
         class="sb-item active"
         id="menu-home"
-        onclick="nav('page-home', this)"
-      >
+        onclick="nav('page-home', this)">
+
         <i class="material-icons-round">
           dashboard
         </i>
+
         DASHBOARD
+
       </div>
 
 
       <div
         class="sb-item"
         id="menu-hasil"
-        onclick="nav('page-hasil', this)"
-      >
+        onclick="nav('page-hasil', this)">
+
         <i class="material-icons-round">
           bar_chart
         </i>
+
         INPUT HASIL
+
       </div>
 
 
       <div
         class="sb-item"
         id="menu-muda"
-        onclick="nav('page-muda', this)"
-      >
+        onclick="nav('page-muda', this)">
+
         <i class="material-icons-round">
           eco
         </i>
+
         BTB MUDA
+
       </div>
 
 
       <div
         class="sb-item"
         id="menu-penalti"
-        onclick="nav('page-penalti', this)"
-      >
+        onclick="nav('page-penalti', this)">
+
         <i class="material-icons-round">
           warning
         </i>
+
         PENALTI
+
       </div>
 
 
       <div
         class="sb-item"
         id="menu-tandan"
-        onclick="nav('page-tandan', this)"
-      >
+        onclick="nav('page-tandan', this)">
+
         <i class="material-icons-round">
           inventory_2
         </i>
+
         REKOD TANDAN
+
       </div>
 
 
       <div
         class="sb-item"
         id="menu-admin"
-        onclick="nav('page-admin', this)"
-      >
+        onclick="nav('page-admin', this)">
+
         <i class="material-icons-round">
           settings
         </i>
+
         ADMIN & REPORT
+
       </div>
+
+    </div>
+
+
+    <!-- ============================================================
+         USER PANEL
+         ============================================================ -->
+
+    <div class="user-panel">
+
+      <div class="user-panel-top">
+
+        <div class="user-avatar">
+
+          <i class="material-icons-round">
+            person
+          </i>
+
+        </div>
+
+        <div class="user-panel-info">
+
+          <div
+            class="user-panel-name"
+            id="current-user-name">
+
+            -
+
+          </div>
+
+          <div
+            class="user-panel-role"
+            id="current-user-role">
+
+            -
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <button
+        type="button"
+        class="logout-button"
+        onclick="logoutUser()">
+
+        <i class="material-icons-round">
+          logout
+        </i>
+
+        LOG KELUAR
+
+      </button>
 
     </div>
 
   </div>
 
 
-  <!-- ======================================================================
+  <!-- ================================================================
        KANDUNGAN UTAMA
-       ====================================================================== -->
+       ================================================================ -->
+
   <div class="app-container">
 
 
-    <!-- ====================================================================
+    <!-- ==============================================================
          DASHBOARD
-         ==================================================================== -->
+         ============================================================== -->
+
     <div
       id="page-home"
-      class="page-section active"
-    >
+      class="page-section active">
+
+
+      <!-- WELCOME -->
 
       <div class="welcome-box">
 
         <img
           src="https://i.imgur.com/APuF5wN.png"
-          alt="Logo"
-        >
+          alt="Logo">
 
         <div>
 
@@ -576,16 +850,18 @@
       </div>
 
 
-      <!-- KAD PRESTASI -->
+      <!-- DASHBOARD DATA -->
+
       <div id="dash-container">
 
-        <div style="
-          text-align:center;
-          padding:30px;
-          color:var(--text-muted);
-          font-size:13px;
-          font-weight:800;
-        ">
+        <div
+          style="
+            text-align:center;
+            padding:30px;
+            color:var(--text-muted);
+            font-size:13px;
+            font-weight:800;
+          ">
 
           <div
             class="spinner"
@@ -595,8 +871,7 @@
               height:30px;
               border-width:3px;
               border-top-color:var(--primary);
-            "
-          >
+            ">
           </div>
 
           Menarik data dashboard...
@@ -607,50 +882,56 @@
 
 
       <!-- ANALISIS GRAF -->
+
       <div
         class="card"
-        style="margin-top:10px;"
-      >
+        style="margin-top:10px;">
 
-        <div style="
-          display:flex;
-          align-items:center;
-          gap:10px;
-          margin-bottom:18px;
-        ">
-
-          <div style="
-            width:4px;
-            height:22px;
-            background:var(--primary);
-            border-radius:4px;
-            flex-shrink:0;
+        <div
+          style="
+            display:flex;
+            align-items:center;
+            gap:10px;
+            margin-bottom:18px;
           ">
+
+          <div
+            style="
+              width:4px;
+              height:22px;
+              background:var(--primary);
+              border-radius:4px;
+              flex-shrink:0;
+            ">
           </div>
 
-          <h4 style="
-            margin:0;
-            font-size:15px;
-            font-weight:900;
-            color:var(--text-main);
-          ">
+          <h4
+            style="
+              margin:0;
+              font-size:15px;
+              font-weight:900;
+              color:var(--text-main);
+            ">
+
             ANALISIS GRAF
+
           </h4>
 
         </div>
 
 
         <!-- PKT + TAHUN -->
-        <div style="
-          display:flex;
-          gap:12px;
-          margin-bottom:14px;
-        ">
+
+        <div
+          style="
+            display:flex;
+            gap:12px;
+            margin-bottom:14px;
+          ">
 
           <div
             class="input-wrapper"
-            style="flex:1"
-          >
+            style="flex:1">
 
             <i class="material-icons-round">
               layers
@@ -658,8 +939,7 @@
 
             <select
               id="chart-pkt"
-              onchange="onChartFilterChange()"
-            >
+              onchange="onChartFilterChange()">
             </select>
 
           </div>
@@ -667,8 +947,7 @@
 
           <div
             class="input-wrapper"
-            style="width:110px"
-          >
+            style="width:110px">
 
             <i class="material-icons-round">
               calendar_today
@@ -676,8 +955,7 @@
 
             <select
               id="chart-tahun"
-              onchange="onChartFilterChange()"
-            >
+              onchange="onChartFilterChange()">
             </select>
 
           </div>
@@ -685,7 +963,8 @@
         </div>
 
 
-        <!-- TAB GRAF -->
+        <!-- CHART TABS -->
+
         <div
           id="chart-tabs"
           style="
@@ -694,15 +973,19 @@
             margin-bottom:14px;
             overflow-x:auto;
             padding-bottom:4px;
-          "
-        >
+          ">
         </div>
 
 
-        <!-- PERBANDINGAN TAHUN -->
+        <!-- COMPARE -->
+
         <div
           id="compare-row"
-          onclick="document.getElementById('chart-compare').click()"
+          onclick="
+            document
+              .getElementById('chart-compare')
+              .click()
+          "
           style="
             display:flex;
             align-items:center;
@@ -713,15 +996,17 @@
             border-radius:12px;
             border:1px solid var(--border);
             cursor:pointer;
-          "
-        >
-
-          <span style="
-            font-size:12px;
-            font-weight:700;
-            color:var(--text-main);
           ">
+
+          <span
+            style="
+              font-size:12px;
+              font-weight:700;
+              color:var(--text-main);
+            ">
+
             Bandingkan dengan tahun lepas
+
           </span>
 
 
@@ -736,8 +1021,7 @@
               transition:background 0.25s;
               flex-shrink:0;
               pointer-events:none;
-            "
-          >
+            ">
 
             <div
               id="compare-knob"
@@ -751,8 +1035,7 @@
                 left:3px;
                 transition:transform 0.25s;
                 box-shadow:0 1px 4px rgba(0,0,0,0.25);
-              "
-            >
+              ">
             </div>
 
           </div>
@@ -761,20 +1044,22 @@
           <input
             type="checkbox"
             id="chart-compare"
-            onchange="onChartFilterChange();_syncToggleUI();"
-            style="display:none;"
-          >
+            onchange="
+              onChartFilterChange();
+              _syncToggleUI();
+            "
+            style="display:none;">
 
         </div>
 
 
-        <!-- CANVAS -->
+        <!-- CHART -->
+
         <div
           style="
             position:relative;
             height:280px;
-          "
-        >
+          ">
 
           <canvas id="mainChart"></canvas>
 
@@ -788,8 +1073,7 @@
               justify-content:center;
               background:var(--surface);
               border-radius:8px;
-            "
-          >
+            ">
 
             <div
               class="spinner"
@@ -798,8 +1082,7 @@
                 height:30px;
                 border-width:3px;
                 border-top-color:var(--primary);
-              "
-            >
+              ">
             </div>
 
           </div>
@@ -808,6 +1091,7 @@
 
 
         <!-- CHART STATS -->
+
         <div
           id="chart-stats"
           style="
@@ -815,22 +1099,25 @@
             grid-template-columns:repeat(3,1fr);
             gap:10px;
             margin-top:14px;
-          "
-        >
+          ">
         </div>
 
       </div>
 
 
       <!-- MENU PANTAS -->
-      <h4 style="
-        margin-top:10px;
-        font-size:14px;
-        color:var(--text-main);
-        font-weight:900;
-        margin-bottom:0;
-      ">
+
+      <h4
+        style="
+          margin-top:10px;
+          font-size:14px;
+          color:var(--text-main);
+          font-weight:900;
+          margin-bottom:0;
+        ">
+
         MENU PANTAS
+
       </h4>
 
 
@@ -838,67 +1125,102 @@
 
         <div
           class="qa-card"
-          onclick="nav('page-hasil', document.getElementById('menu-hasil'))"
-        >
+          onclick="
+            nav(
+              'page-hasil',
+              document.getElementById('menu-hasil')
+            )
+          ">
+
           <i class="material-icons-round">
             bar_chart
           </i>
+
           <span>
             INPUT HASIL
           </span>
+
         </div>
 
 
         <div
           class="qa-card"
-          onclick="nav('page-muda', document.getElementById('menu-muda'))"
-        >
+          onclick="
+            nav(
+              'page-muda',
+              document.getElementById('menu-muda')
+            )
+          ">
+
           <i class="material-icons-round">
             eco
           </i>
+
           <span>
             BTB MUDA
           </span>
+
         </div>
 
 
         <div
           class="qa-card"
-          onclick="nav('page-penalti', document.getElementById('menu-penalti'))"
-        >
+          onclick="
+            nav(
+              'page-penalti',
+              document.getElementById('menu-penalti')
+            )
+          ">
+
           <i class="material-icons-round">
             warning
           </i>
+
           <span>
             PENALTI
           </span>
+
         </div>
 
 
         <div
           class="qa-card"
-          onclick="nav('page-tandan', document.getElementById('menu-tandan'))"
-        >
+          onclick="
+            nav(
+              'page-tandan',
+              document.getElementById('menu-tandan')
+            )
+          ">
+
           <i class="material-icons-round">
             inventory_2
           </i>
+
           <span>
             REKOD TANDAN
           </span>
+
         </div>
 
 
         <div
           class="qa-card"
           style="grid-column:span 2"
-          onclick="nav('page-admin', document.getElementById('menu-admin'))"
-        >
+          onclick="
+            nav(
+              'page-admin',
+              document.getElementById('menu-admin')
+            )
+          ">
+
           <i class="material-icons-round">
             settings
           </i>
+
           <span>
             ADMIN & LAPORAN
           </span>
+
         </div>
 
       </div>
@@ -906,31 +1228,31 @@
     </div>
 
 
-    <!-- ====================================================================
+    <!-- ==============================================================
          INPUT HASIL
-         ==================================================================== -->
+         ============================================================== -->
+
     <div
       id="page-hasil"
-      class="page-section"
-    >
+      class="page-section">
 
       <div class="pill">
         MODE: HASIL
       </div>
 
-
       <div class="card">
 
-        <div style="
-          display:flex;
-          gap:15px;
-          margin-bottom:20px;
-        ">
+
+        <div
+          style="
+            display:flex;
+            gap:15px;
+            margin-bottom:20px;
+          ">
 
           <div
             class="input-wrapper"
-            style="flex:1"
-          >
+            style="flex:1">
 
             <i class="material-icons-round">
               calendar_today
@@ -939,16 +1261,14 @@
             <input
               type="date"
               id="date-hasil"
-              onchange="renderPeringkatHasil()"
-            >
+              onchange="renderPeringkatHasil()">
 
           </div>
 
 
           <div
             class="input-wrapper"
-            style="width:130px"
-          >
+            style="width:130px">
 
             <i class="material-icons-round">
               tune
@@ -956,8 +1276,7 @@
 
             <select
               id="mode-hasil"
-              onchange="renderPeringkatHasil()"
-            >
+              onchange="renderPeringkatHasil()">
 
               <option value="TAN">
                 TAN
@@ -985,8 +1304,7 @@
               style="
                 float:right;
                 color:var(--success);
-              "
-            >
+              ">
             </span>
 
           </label>
@@ -1000,8 +1318,7 @@
 
             <select
               id="sel-pkt-hasil"
-              onchange="renderTeamHasil()"
-            >
+              onchange="renderTeamHasil()">
             </select>
 
           </div>
@@ -1020,18 +1337,19 @@
             margin-top:15px;
             display:none;
             box-shadow:none;
-          "
-        >
+          ">
 
           <label
             id="lbl-display"
             style="
               color:var(--warning);
               margin-bottom:5px;
-            "
-          >
+            ">
+
             JUMLAH TAN (HARI INI)
+
           </label>
+
 
           <div
             id="display-tan-live"
@@ -1040,19 +1358,24 @@
               font-weight:900;
               color:#e0921f;
               letter-spacing:-1px;
-            "
-          >
+            ">
+
             0.00
+
           </div>
 
-          <small style="
-            color:rgba(255,181,71,0.85);
-            font-size:11px;
-            display:block;
-            margin-top:5px;
-            font-weight:700;
-          ">
+
+          <small
+            style="
+              color:rgba(255,181,71,0.85);
+              font-size:11px;
+              display:block;
+              margin-top:5px;
+              font-weight:700;
+            ">
+
             Auto-Kira aktif. Sila tekan Save Master.
+
           </small>
 
         </div>
@@ -1061,8 +1384,7 @@
         <div
           id="box-status-tuai"
           class="info-status"
-          style="display:none;"
-        >
+          style="display:none;">
 
           <div class="info-item">
 
@@ -1088,9 +1410,10 @@
 
             <b
               id="valBaki"
-              style="color:var(--danger)"
-            >
+              style="color:var(--danger)">
+
               0.00 Ha
+
             </b>
 
           </div>
@@ -1100,8 +1423,7 @@
 
         <div
           id="wrap-team-hasil"
-          style="margin-top:20px;"
-        >
+          style="margin-top:20px;">
         </div>
 
 
@@ -1111,8 +1433,7 @@
           style="
             margin-top:25px;
             display:none;
-          "
-        >
+          ">
 
           <label id="lbl-val-hasil">
             NILAI HEKTAR
@@ -1126,17 +1447,17 @@
             inputmode="text"
             onfocus="onFocusInput(this,'hasil')"
             onblur="onBlurInput(this,'hasil')"
-            oninput="onInputHandler(this,'hasil')"
-          >
+            oninput="onInputHandler(this,'hasil')">
 
         </div>
 
 
-        <div style="
-          margin-top:30px;
-          border-top:1px dashed rgba(148,163,184,0.35);
-          padding-top:20px;
-        ">
+        <div
+          style="
+            margin-top:30px;
+            border-top:1px dashed rgba(148,163,184,0.35);
+            padding-top:20px;
+          ">
 
           <button
             id="btnRefRumusan"
@@ -1145,8 +1466,7 @@
             style="
               display:none;
               margin-bottom:15px;
-            "
-          >
+            ">
 
             <i class="material-icons-round">
               sync
@@ -1159,8 +1479,7 @@
 
           <button
             class="btn-success"
-            onclick="processSaveMaster()"
-          >
+            onclick="processSaveMaster()">
 
             <i class="material-icons-round">
               cloud_upload
@@ -1177,20 +1496,20 @@
     </div>
 
 
-    <!-- ====================================================================
+    <!-- ==============================================================
          BTB MUDA
-         ==================================================================== -->
+         ============================================================== -->
+
     <div
       id="page-muda"
-      class="page-section"
-    >
+      class="page-section">
 
       <div class="pill">
         MODE: BTB MUDA
       </div>
 
-
       <div class="card">
+
 
         <div class="input-group">
 
@@ -1202,8 +1521,7 @@
 
             <input
               type="date"
-              id="date-muda"
-            >
+              id="date-muda">
 
           </div>
 
@@ -1224,8 +1542,7 @@
 
             <select
               id="sel-pkt-muda"
-              onchange="renderTeamMuda()"
-            >
+              onchange="renderTeamMuda()">
 
               <option value="PKT001G">
                 PKT 001G
@@ -1252,15 +1569,13 @@
 
         <div
           id="stats-header-muda"
-          class="stats-header"
-        >
+          class="stats-header">
         </div>
 
 
         <div
           id="wrap-team-muda"
-          style="margin-top:20px;"
-        >
+          style="margin-top:20px;">
         </div>
 
 
@@ -1268,8 +1583,7 @@
 
           <button
             class="btn-success"
-            onclick="saveData('muda')"
-          >
+            onclick="saveData('muda')">
 
             <i class="material-icons-round">
               check_circle
@@ -1286,31 +1600,31 @@
     </div>
 
 
-    <!-- ====================================================================
+    <!-- ==============================================================
          PENALTI
-         ==================================================================== -->
+         ============================================================== -->
+
     <div
       id="page-penalti"
-      class="page-section"
-    >
+      class="page-section">
 
       <div class="pill">
         MODE: PENALTI
       </div>
 
-
       <div class="card">
 
-        <div style="
-          display:flex;
-          gap:15px;
-          margin-bottom:20px;
-        ">
+
+        <div
+          style="
+            display:flex;
+            gap:15px;
+            margin-bottom:20px;
+          ">
 
           <div
             class="input-wrapper"
-            style="flex:1"
-          >
+            style="flex:1">
 
             <i class="material-icons-round">
               calendar_today
@@ -1318,16 +1632,14 @@
 
             <input
               type="date"
-              id="date-penalti"
-            >
+              id="date-penalti">
 
           </div>
 
 
           <div
             class="input-wrapper"
-            style="width:130px"
-          >
+            style="width:130px">
 
             <i class="material-icons-round">
               category
@@ -1335,8 +1647,7 @@
 
             <select
               id="type-penalti"
-              onchange="renderPeringkatPenalti()"
-            >
+              onchange="renderPeringkatPenalti()">
 
               <option value="MENGKAL">
                 MENGKAL
@@ -1367,8 +1678,7 @@
 
             <select
               id="sel-pkt-penalti"
-              onchange="renderPeringkatPenalti()"
-            >
+              onchange="renderPeringkatPenalti()">
 
               <option value="PKT001">
                 PKT 001
@@ -1399,8 +1709,7 @@
 
         <div
           class="input-group"
-          style="margin-top:25px;"
-        >
+          style="margin-top:25px;">
 
           <label>
 
@@ -1413,8 +1722,7 @@
                 font-weight:900;
                 color:var(--primary);
                 font-size:11px;
-              "
-            >
+              ">
             </span>
 
           </label>
@@ -1428,8 +1736,7 @@
             inputmode="text"
             onfocus="onFocusInput(this,'penalti')"
             onblur="onBlurInput(this,'penalti')"
-            oninput="onInputHandler(this,'penalti')"
-          >
+            oninput="onInputHandler(this,'penalti')">
 
         </div>
 
@@ -1438,8 +1745,7 @@
 
           <button
             class="btn-danger"
-            onclick="saveData('penalti')"
-          >
+            onclick="saveData('penalti')">
 
             <i class="material-icons-round">
               error_outline
@@ -1456,20 +1762,20 @@
     </div>
 
 
-    <!-- ====================================================================
+    <!-- ==============================================================
          REKOD TANDAN
-         ==================================================================== -->
+         ============================================================== -->
+
     <div
       id="page-tandan"
-      class="page-section"
-    >
+      class="page-section">
 
       <div class="pill">
         MODE: REKOD TANDAN
       </div>
 
-
       <div class="card">
+
 
         <div class="input-group">
 
@@ -1481,8 +1787,7 @@
 
             <input
               type="date"
-              id="date-tandan"
-            >
+              id="date-tandan">
 
           </div>
 
@@ -1503,8 +1808,7 @@
 
             <select
               id="sel-pkt-tandan"
-              onchange="renderTeamTandan()"
-            >
+              onchange="renderTeamTandan()">
 
               <option value="PKT004">
                 PKT 004
@@ -1535,15 +1839,13 @@
 
         <div
           id="stats-header-tandan"
-          class="stats-header"
-        >
+          class="stats-header">
         </div>
 
 
         <div
           id="wrap-team-tandan"
-          style="margin-top:20px;"
-        >
+          style="margin-top:20px;">
         </div>
 
 
@@ -1551,8 +1853,7 @@
 
           <button
             class="btn-warning"
-            onclick="saveData('tandan')"
-          >
+            onclick="saveData('tandan')">
 
             <i class="material-icons-round">
               inventory_2
@@ -1569,37 +1870,37 @@
     </div>
 
 
-    <!-- ====================================================================
+    <!-- ==============================================================
          ADMIN & LAPORAN
-         ==================================================================== -->
+         ============================================================== -->
+
     <div
       id="page-admin"
-      class="page-section"
-    >
+      class="page-section">
 
       <div class="pill">
         ADMIN & LAPORAN
       </div>
 
-
       <div class="card">
+
 
         <label>
           JANA LAPORAN HARIAN
         </label>
 
 
-        <div style="
-          display:grid;
-          grid-template-columns:1fr 1fr;
-          gap:15px;
-          margin-top:15px;
-        ">
+        <div
+          style="
+            display:grid;
+            grid-template-columns:1fr 1fr;
+            gap:15px;
+            margin-top:15px;
+          ">
 
           <button
             class="btn-po"
-            onclick="getReport('PO')"
-          >
+            onclick="getReport('PO')">
 
             <i class="material-icons-round">
               description
@@ -1612,8 +1913,7 @@
 
           <button
             class="btn-rumusan"
-            onclick="getReport('RUMUSAN')"
-          >
+            onclick="getReport('RUMUSAN')">
 
             <i class="material-icons-round">
               summarize
@@ -1629,8 +1929,7 @@
         <button
           class="btn-primary"
           onclick="getReport('ALL')"
-          style="margin-top:15px;"
-        >
+          style="margin-top:15px;">
 
           <i class="material-icons-round">
             library_books
@@ -1646,8 +1945,7 @@
           style="
             margin-top:20px;
             display:none;
-          "
-        >
+          ">
 
           <textarea
             id="report-out"
@@ -1661,15 +1959,14 @@
               font-family:monospace;
               color:var(--text-main);
             "
-            readonly
-          ></textarea>
+            readonly>
+          </textarea>
 
 
           <button
             class="btn-success"
             onclick="copyText()"
-            style="margin-top:15px;"
-          >
+            style="margin-top:15px;">
 
             <i class="material-icons-round">
               content_copy
@@ -1689,9 +1986,9 @@
   </div>
 
 
-  <!-- ======================================================================
+  <!-- ================================================================
        JAVASCRIPT
-       ====================================================================== -->
+       ================================================================ -->
 
   <script src="js/config.js"></script>
   <script src="js/app.js"></script>
@@ -1699,3 +1996,4 @@
 
 </body>
 </html>
+```
