@@ -35,6 +35,13 @@ let FORMULA_STORE = {};
 /** Data status pusingan tuai dari backend. Diisi oleh fetchHarvestStats() */
 let HARVEST_STATS = null;
 
+// ============================================================================
+// AUTHENTICATION
+// ============================================================================
+
+const AUTH_KEY = "ehasil_user";
+
+let CURRENT_USER = null;
 
 // ============================================================================
 // 2. INISIALISASI
